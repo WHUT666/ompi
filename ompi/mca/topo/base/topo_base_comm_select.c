@@ -55,7 +55,7 @@ struct queried_module_t {
     mca_topo_base_module_t *om_module;
 };
 typedef struct queried_module_t queried_module_t;
-static OBJ_CLASS_INSTANCE(queried_module_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(queried_module_t, opal_list_item_t, NULL, NULL);
 
 /*
  * Only one topo module can be attached to each communicator. The

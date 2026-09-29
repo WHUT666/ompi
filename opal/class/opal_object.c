@@ -82,6 +82,14 @@ void opal_class_initialize(opal_class_t *cls)
 
     assert(cls);
 
+#if defined(_MSC_VER)
+    /* MSVC: cls_parent is NULL until resolved here -- the descriptor
+     * carries a resolver thunk instead of an imported-data address. */
+    if (NULL == cls->cls_parent && NULL != cls->cls_parent_resolver) {
+        cls->cls_parent = cls->cls_parent_resolver();
+    }
+#endif
+
     /* Check to see if any other thread got in here and initialized
        this class before we got a chance to */
 
@@ -108,6 +116,12 @@ void opal_class_initialize(opal_class_t *cls)
     cls_construct_array_count = 0;
     cls_destruct_array_count = 0;
     for (c = cls; c; c = c->cls_parent) {
+#if defined(_MSC_VER)
+        /* an ancestor may carry an unresolved imported parent too */
+        if (NULL == c->cls_parent && NULL != c->cls_parent_resolver) {
+            c->cls_parent = c->cls_parent_resolver();
+        }
+#endif
         if (NULL != c->cls_construct) {
             cls_construct_array_count++;
         }
@@ -140,6 +154,11 @@ void opal_class_initialize(opal_class_t *cls)
     c = cls;
     *cls_construct_array = NULL; /* end marker for the constructors */
     for (i = 0; i < cls->cls_depth; i++) {
+#if defined(_MSC_VER)
+        if (NULL == c->cls_parent && NULL != c->cls_parent_resolver) {
+            c->cls_parent = c->cls_parent_resolver();
+        }
+#endif
         if (NULL != c->cls_construct) {
             --cls_construct_array;
             *cls_construct_array = c->cls_construct;

@@ -526,6 +526,27 @@ int32_t ompi_datatype_init( void )
 
     opal_datatype_init();
 
+#if defined(_MSC_VER)
+    /* MSVC cannot take the address of __declspec(dllimport) data in a
+     * static initializer, so the predefined datatypes were emitted with
+     * a NULL obj_class and NULL desc pointers.  Point them at the real
+     * class descriptor and at this type's slots in the shared
+     * opal_datatype_predefined_elem_desc table now. */
+    for (i = 0; i < OMPI_DATATYPE_MPI_MAX_PREDEFINED; i++) {
+        ompi_datatype_t *dt = (ompi_datatype_t *) ompi_datatype_basicDatatypes[i];
+        if (NULL == dt) {
+            continue;
+        }
+        dt->super.super.obj_class = OBJ_CLASS(opal_datatype_t);
+        if (0 != dt->super.desc.length && NULL == dt->super.desc.desc) {
+            dt->super.desc.desc = &opal_datatype_predefined_elem_desc[2 * dt->super.id];
+        }
+        if (0 != dt->super.opt_desc.length && NULL == dt->super.opt_desc.desc) {
+            dt->super.opt_desc.desc = &opal_datatype_predefined_elem_desc[2 * dt->super.id];
+        }
+    }
+#endif
+
     (void) mca_base_var_register(
         "ompi", "datatype", NULL, "consolidate_threshold",
         "Minimum count for MPI_Pack and MPI_Unpack to consolidate count/datatype into a "

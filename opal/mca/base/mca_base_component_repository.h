@@ -121,7 +121,7 @@ int mca_base_component_repository_open(mca_base_framework_t *framework,
 /**
  * @brief Reduce the reference count of a component and dlclose it if necessary
  */
-void mca_base_component_repository_release(const mca_base_component_t *component);
+OPAL_DECLSPEC void mca_base_component_repository_release(const mca_base_component_t *component);
 
 /**
  * @brief Increase the reference count of a component

@@ -63,7 +63,7 @@ typedef pthread_mutex_t opal_thread_internal_mutex_t;
 #endif
 
 
-int opal_thread_internal_mutex_init_recursive(opal_thread_internal_mutex_t *p_mutex);
+OPAL_DECLSPEC int opal_thread_internal_mutex_init_recursive(opal_thread_internal_mutex_t *p_mutex);
 
 static inline int opal_thread_internal_mutex_init(opal_thread_internal_mutex_t *p_mutex,
                                                   bool recursive)

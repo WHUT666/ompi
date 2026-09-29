@@ -74,7 +74,7 @@ static void tracker_destructor(opal_progress_tracker_t *p)
     }
 }
 
-static OBJ_CLASS_INSTANCE(opal_progress_tracker_t, opal_list_item_t, tracker_constructor,
+OBJ_CLASS_INSTANCE_STATIC(opal_progress_tracker_t, opal_list_item_t, tracker_constructor,
                           tracker_destructor);
 
 static bool inited = false;

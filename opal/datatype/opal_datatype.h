@@ -220,41 +220,51 @@ OPAL_DECLSPEC extern const opal_datatype_t
     *opal_datatype_basicDatatypes[OPAL_DATATYPE_MAX_PREDEFINED];
 OPAL_DECLSPEC extern const size_t opal_datatype_local_sizes[OPAL_DATATYPE_MAX_PREDEFINED];
 
+/* MSVC cannot constant-initialize the desc pointers of the predefined
+ * types (the backing element table may be imported data), so they are
+ * patched in during opal_datatype_init() -- which means the objects
+ * cannot live in read-only storage on Windows. */
+#if defined(_MSC_VER)
+#    define OPAL_PREDEFINED_DT_CONST
+#else
+#    define OPAL_PREDEFINED_DT_CONST const
+#endif
+
 /* Local Architecture as provided by opal_arch_compute_local_id() */
 OPAL_DECLSPEC extern uint32_t opal_local_arch;
 
 /*
  * The OPAL-layer's Basic datatypes themselves.
  */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_empty;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_loop;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_end_loop;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_lb;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_ub;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_int1;    /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_int2;    /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_int4;    /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_int8;    /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_int16;   /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_uint1;   /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_uint2;   /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_uint4;   /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_uint8;   /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_uint16;  /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_float2;  /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_float4;  /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_float8;  /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_float12; /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_float16; /* in bytes */
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_short_float_complex;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_float_complex;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_double_complex;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_long_double_complex;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_float128_complex;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_bool;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_wchar;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_long;
-OPAL_DECLSPEC extern const opal_datatype_t opal_datatype_unsigned_long;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_empty;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_loop;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_end_loop;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_lb;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_ub;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int1;    /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int2;    /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int4;    /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int8;    /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int16;   /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint1;   /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint2;   /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint4;   /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint8;   /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint16;  /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float2;  /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float4;  /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float8;  /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float12; /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float16; /* in bytes */
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_short_float_complex;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float_complex;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_double_complex;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_long_double_complex;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float128_complex;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_bool;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_wchar;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_long;
+OPAL_DECLSPEC extern OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_unsigned_long;
 
 /*
  * Functions exported externally

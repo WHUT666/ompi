@@ -231,7 +231,7 @@ typedef struct {
     pmix_nspace_t nspace;
     opal_jobid_t jobid;
 } opal_nptr_t;
-static OBJ_CLASS_INSTANCE(opal_nptr_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(opal_nptr_t, opal_list_item_t, NULL, NULL);
 
 static opal_list_t localnspaces;
 

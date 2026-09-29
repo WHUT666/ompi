@@ -231,7 +231,9 @@
 
 #ifndef OMPI_DECLSPEC
 #  if defined(WIN32) || defined(_WIN32)
-#    if defined(OMPI_IMPORTS)
+#    if defined(OMPI_BUILDING_MPI)
+#      define OMPI_DECLSPEC        __declspec(dllexport)
+#    elif defined(OMPI_IMPORTS)
 #      define OMPI_DECLSPEC        __declspec(dllimport)
 #    else
 #      define OMPI_DECLSPEC

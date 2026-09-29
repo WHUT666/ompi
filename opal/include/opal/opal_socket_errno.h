@@ -22,6 +22,16 @@
 #include "opal/constants.h"
 #include <errno.h>
 
-#define opal_socket_errno errno
+#ifdef _WIN32
+/* Winsock does not report errors through errno; opal_win32_socket_errno()
+ * maps WSAGetLastError() onto the corresponding POSIX errno value. */
+BEGIN_C_DECLS
+OPAL_DECLSPEC int opal_win32_socket_errno(void);
+OPAL_DECLSPEC int opal_win32_socket_startup(void);
+END_C_DECLS
+#    define opal_socket_errno opal_win32_socket_errno()
+#else
+#    define opal_socket_errno errno
+#endif
 
 #endif /* OPAL_GET_ERROR_H */

@@ -145,7 +145,7 @@ int opal_bitmap_set_bit(opal_bitmap_t *bm, int bit)
     }
 
     /* Now set the bit */
-    bm->bitmap[index] |= (1UL << offset);
+    bm->bitmap[index] |= (((uint64_t) 1) << offset);
 
     return OPAL_SUCCESS;
 }
@@ -161,7 +161,7 @@ int opal_bitmap_clear_bit(opal_bitmap_t *bm, int bit)
     index = bit / SIZE_OF_BASE_TYPE;
     offset = bit % SIZE_OF_BASE_TYPE;
 
-    bm->bitmap[index] &= ~(1UL << offset);
+    bm->bitmap[index] &= ~(((uint64_t) 1) << offset);
     return OPAL_SUCCESS;
 }
 
@@ -176,7 +176,7 @@ bool opal_bitmap_is_set_bit(opal_bitmap_t *bm, int bit)
     index = bit / SIZE_OF_BASE_TYPE;
     offset = bit % SIZE_OF_BASE_TYPE;
 
-    if (0 != (bm->bitmap[index] & (1UL << offset))) {
+    if (0 != (bm->bitmap[index] & (((uint64_t) 1) << offset))) {
         return true;
     }
 
@@ -248,7 +248,7 @@ int opal_bitmap_find_and_set_first_unset_bit(opal_bitmap_t *bm, int *position)
      * above already goes through.
      */
     if (*position >= bm->max_size) {
-        bm->bitmap[i] &= ~(1UL << (*position - i * SIZE_OF_BASE_TYPE));
+        bm->bitmap[i] &= ~(((uint64_t) 1) << (*position - i * SIZE_OF_BASE_TYPE));
         return OPAL_ERR_BAD_PARAM;
     }
 
@@ -417,7 +417,7 @@ int opal_bitmap_num_set_bits(opal_bitmap_t *bm, int len)
     if (remaining_bits > 0) {
         val = bm->bitmap[num_elements];
         /* Mask off bits beyond len */
-        val &= ((1UL << remaining_bits) - 1);
+        val &= ((((uint64_t) 1) << remaining_bits) - 1);
         for (; val; cnt++) {
             val &= val - 1; /* clear the least significant bit set */
         }

@@ -922,6 +922,7 @@ int ompi_rte_init(int *pargc, char ***pargv)
 
   error:
     if (OPAL_ERR_SILENT != ret ) {
+        fprintf(stderr, "[ompi-rte-error] %s: %s (%d)\n", error ? error : "?", opal_strerror(ret), ret);
         opal_show_help("help-mpi-runtime.txt",
                        "mpi_init:startup:internal-failure",
                        true, "MPI runtime init", "RTE init",

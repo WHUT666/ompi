@@ -1,0 +1,5 @@
+#ifndef OPAL_WIN32_FWD_LIMITS_H
+#define OPAL_WIN32_FWD_LIMITS_H
+#include "@OPAL_CRT_MSVC@/limits.h"
+#include "opal_win32_common.h"
+#endif

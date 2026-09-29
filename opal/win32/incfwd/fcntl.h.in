@@ -1,0 +1,101 @@
+#ifndef OPAL_WIN32_FWD_FCNTL_H
+#define OPAL_WIN32_FWD_FCNTL_H
+#include "opal_win32_common.h"
+#include "@OPAL_CRT_UCRT@/fcntl.h"
+#ifndef O_ACCMODE
+#    define O_ACCMODE (O_RDONLY | O_WRONLY | O_RDWR)
+#endif
+#ifndef O_NOCTTY
+#    define O_NOCTTY 0x8000
+#endif
+#ifndef O_NONBLOCK
+#    define O_NONBLOCK 0x4000
+#endif
+#ifndef O_DIRECTORY
+#    define O_DIRECTORY 0x10000
+#endif
+#ifndef O_NOFOLLOW
+#    define O_NOFOLLOW 0x20000
+#endif
+#ifndef O_CLOEXEC
+#    define O_CLOEXEC 0x40000
+#endif
+#ifndef O_ASYNC
+#    define O_ASYNC 0x80000
+#endif
+#ifndef O_SYNC
+#    define O_SYNC 0x100000
+#endif
+#ifndef O_DSYNC
+#    define O_DSYNC O_SYNC
+#endif
+#ifndef O_RSYNC
+#    define O_RSYNC O_SYNC
+#endif
+#ifndef O_NDELAY
+#    define O_NDELAY O_NONBLOCK
+#endif
+#ifndef O_DIRECT
+#    define O_DIRECT 0x200000
+#endif
+#ifndef O_NOATIME
+#    define O_NOATIME 0x400000
+#endif
+#ifndef O_PATH
+#    define O_PATH 0x800000
+#endif
+#ifndef F_DUPFD
+#    define F_DUPFD 0
+#    define F_GETFD 1
+#    define F_SETFD 2
+#    define F_GETFL 3
+#    define F_SETFL 4
+#    define F_GETOWN 5
+#    define F_SETOWN 6
+#    define F_GETLK 7
+#    define F_SETLK 8
+#    define F_SETLKW 9
+#    define F_DUPFD_CLOEXEC 12
+#    define F_RDLCK 0
+#    define F_WRLCK 1
+#    define F_UNLCK 2
+#endif
+#ifndef F_DUPFD_CLOEXEC
+#    define F_DUPFD_CLOEXEC 12
+#endif
+#ifndef FD_CLOEXEC
+#    define FD_CLOEXEC 1
+#endif
+/* *at() flag bits and the AT_FDCWD sentinel -- the UCRT lacks them */
+#ifndef AT_FDCWD
+#    define AT_FDCWD            (-100)
+#endif
+#ifndef AT_SYMLINK_NOFOLLOW
+#    define AT_SYMLINK_NOFOLLOW 0x100
+#endif
+#ifndef AT_REMOVEDIR
+#    define AT_REMOVEDIR        0x200
+#endif
+#ifndef AT_SYMLINK_FOLLOW
+#    define AT_SYMLINK_FOLLOW   0x400
+#endif
+#ifndef AT_EACCESS
+#    define AT_EACCESS          0x200
+#endif
+struct flock {
+    short l_type;
+    short l_whence;
+    off_t l_start;
+    off_t l_len;
+    pid_t l_pid;
+};
+#ifdef __cplusplus
+extern "C" {
+#endif
+OPAL_WIN32_DECLSPEC int opal_win32_fcntl(int fd, int cmd, ...);
+OPAL_WIN32_DECLSPEC int openat(int dirfd, const char *pathname, int flags, ...);
+#ifdef __cplusplus
+}
+#endif
+#define fcntl opal_win32_fcntl
+#endif /* OPAL_WIN32_FWD_FCNTL_H */

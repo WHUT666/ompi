@@ -1,11 +1,11 @@
 [submodule "prrte"]
 	path = 3rd-party/prrte
-	url = ../../open-mpi/prrte
-	branch = master
+	url = ../../WHUT666/prrte
+	branch = win32-msvc-port
 [submodule "openpmix"]
 	path = 3rd-party/openpmix
-	url = ../../openpmix/openpmix.git
-	branch = master
+	url = ../../WHUT666/openpmix.git
+	branch = win32-msvc-port
 [submodule "oac"]
 	path = config/oac
 	url = ../../open-mpi/oac

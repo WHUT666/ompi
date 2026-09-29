@@ -1,0 +1,6 @@
+#ifndef OPAL_WIN32_FWD_SYS_UTIME_H
+#define OPAL_WIN32_FWD_SYS_UTIME_H
+#include "opal_win32_common.h"
+#include "@OPAL_CRT_UCRT@/sys/utime.h"
+/* UCRT already provides struct utimbuf and utime(); nothing to add. */
+#endif

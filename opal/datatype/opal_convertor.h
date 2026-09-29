@@ -262,7 +262,7 @@ static inline int32_t opal_convertor_on_unified_device(const opal_convertor_t *p
  * depend on the configuration of the master convertor. In homogeneous
  * environments, the local and remote sizes are identical.
  */
-size_t opal_convertor_compute_remote_size(opal_convertor_t *pConv);
+OPAL_DECLSPEC size_t opal_convertor_compute_remote_size(opal_convertor_t *pConv);
 
 /**
  * Return the packed size of the memory layout represented by this

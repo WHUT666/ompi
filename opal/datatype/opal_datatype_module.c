@@ -96,43 +96,43 @@ opal_datatype_config_t opal_datatype_config = {
  * into an array, which is initialized at runtime.
  * Everything is constant.
  */
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_empty = OPAL_DATATYPE_INITIALIZER_EMPTY(
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_empty = OPAL_DATATYPE_INITIALIZER_EMPTY(
     OPAL_DATATYPE_FLAG_CONTIGUOUS);
 
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_loop = OPAL_DATATYPE_INITIALIZER_LOOP(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_end_loop = OPAL_DATATYPE_INITIALIZER_END_LOOP(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_lb = OPAL_DATATYPE_INITIALIZER_LB(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_ub = OPAL_DATATYPE_INITIALIZER_UB(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_int1 = OPAL_DATATYPE_INITIALIZER_INT1(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_int2 = OPAL_DATATYPE_INITIALIZER_INT2(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_int4 = OPAL_DATATYPE_INITIALIZER_INT4(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_int8 = OPAL_DATATYPE_INITIALIZER_INT8(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_int16 = OPAL_DATATYPE_INITIALIZER_INT16(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_uint1 = OPAL_DATATYPE_INITIALIZER_UINT1(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_uint2 = OPAL_DATATYPE_INITIALIZER_UINT2(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_uint4 = OPAL_DATATYPE_INITIALIZER_UINT4(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_uint8 = OPAL_DATATYPE_INITIALIZER_UINT8(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_uint16 = OPAL_DATATYPE_INITIALIZER_UINT16(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_float2 = OPAL_DATATYPE_INITIALIZER_FLOAT2(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_float4 = OPAL_DATATYPE_INITIALIZER_FLOAT4(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_float8 = OPAL_DATATYPE_INITIALIZER_FLOAT8(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_float12 = OPAL_DATATYPE_INITIALIZER_FLOAT12(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_float16 = OPAL_DATATYPE_INITIALIZER_FLOAT16(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_short_float_complex
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_loop = OPAL_DATATYPE_INITIALIZER_LOOP(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_end_loop = OPAL_DATATYPE_INITIALIZER_END_LOOP(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_lb = OPAL_DATATYPE_INITIALIZER_LB(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_ub = OPAL_DATATYPE_INITIALIZER_UB(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int1 = OPAL_DATATYPE_INITIALIZER_INT1(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int2 = OPAL_DATATYPE_INITIALIZER_INT2(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int4 = OPAL_DATATYPE_INITIALIZER_INT4(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int8 = OPAL_DATATYPE_INITIALIZER_INT8(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_int16 = OPAL_DATATYPE_INITIALIZER_INT16(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint1 = OPAL_DATATYPE_INITIALIZER_UINT1(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint2 = OPAL_DATATYPE_INITIALIZER_UINT2(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint4 = OPAL_DATATYPE_INITIALIZER_UINT4(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint8 = OPAL_DATATYPE_INITIALIZER_UINT8(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_uint16 = OPAL_DATATYPE_INITIALIZER_UINT16(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float2 = OPAL_DATATYPE_INITIALIZER_FLOAT2(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float4 = OPAL_DATATYPE_INITIALIZER_FLOAT4(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float8 = OPAL_DATATYPE_INITIALIZER_FLOAT8(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float12 = OPAL_DATATYPE_INITIALIZER_FLOAT12(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float16 = OPAL_DATATYPE_INITIALIZER_FLOAT16(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_short_float_complex
     = OPAL_DATATYPE_INITIALIZER_SHORT_FLOAT_COMPLEX(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_float_complex
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float_complex
     = OPAL_DATATYPE_INITIALIZER_FLOAT_COMPLEX(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_double_complex
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_double_complex
     = OPAL_DATATYPE_INITIALIZER_DOUBLE_COMPLEX(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_long_double_complex
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_long_double_complex
     = OPAL_DATATYPE_INITIALIZER_LONG_DOUBLE_COMPLEX(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_float128_complex
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_float128_complex
     = OPAL_DATATYPE_INITIALIZER_FLOAT128_COMPLEX(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_bool = OPAL_DATATYPE_INITIALIZER_BOOL(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_wchar = OPAL_DATATYPE_INITIALIZER_WCHAR(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_long =  OPAL_DATATYPE_INITIALIZER_LONG(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_unsigned_long =  OPAL_DATATYPE_INITIALIZER_UNSIGNED_LONG(0);
-OPAL_DECLSPEC const opal_datatype_t opal_datatype_unavailable
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_bool = OPAL_DATATYPE_INITIALIZER_BOOL(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_wchar = OPAL_DATATYPE_INITIALIZER_WCHAR(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_long =  OPAL_DATATYPE_INITIALIZER_LONG(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_unsigned_long =  OPAL_DATATYPE_INITIALIZER_UNSIGNED_LONG(0);
+OPAL_DECLSPEC OPAL_PREDEFINED_DT_CONST opal_datatype_t opal_datatype_unavailable
     = OPAL_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED(UNAVAILABLE, 0);
 
 OPAL_DECLSPEC dt_elem_desc_t opal_datatype_predefined_elem_desc[2 * OPAL_DATATYPE_MAX_PREDEFINED]
@@ -164,9 +164,9 @@ OPAL_DECLSPEC const size_t opal_datatype_local_sizes[OPAL_DATATYPE_MAX_PREDEFINE
 #else
     [OPAL_DATATYPE_SHORT_FLOAT_COMPLEX] = 4, /* typical sizeof(short float _Complex) */
 #endif
-    [OPAL_DATATYPE_FLOAT_COMPLEX] = sizeof(float _Complex),
-    [OPAL_DATATYPE_DOUBLE_COMPLEX] = sizeof(double _Complex),
-    [OPAL_DATATYPE_LONG_DOUBLE_COMPLEX] = sizeof(long double _Complex),
+    [OPAL_DATATYPE_FLOAT_COMPLEX] = sizeof(OPAL_COMPLEX_FLOAT_T),
+    [OPAL_DATATYPE_DOUBLE_COMPLEX] = sizeof(OPAL_COMPLEX_DOUBLE_T),
+    [OPAL_DATATYPE_LONG_DOUBLE_COMPLEX] = sizeof(OPAL_COMPLEX_LONG_DOUBLE_T),
     [OPAL_DATATYPE_BOOL] = sizeof(_Bool),
     [OPAL_DATATYPE_WCHAR] = sizeof(wchar_t),
     [OPAL_DATATYPE_LONG] = sizeof(long),
@@ -184,7 +184,7 @@ OPAL_DECLSPEC const size_t opal_datatype_local_sizes[OPAL_DATATYPE_MAX_PREDEFINE
  * are sized to OPAL_DATATYPE_MAX_PREDEFINED_SIZE. Guarantee at compile time that the widest
  * predefined types copied through them still fit; if a wider predefined type is ever added to the
  * table above, bump OPAL_DATATYPE_MAX_PREDEFINED_SIZE to match. */
-_Static_assert(sizeof(long double _Complex) <= OPAL_DATATYPE_MAX_PREDEFINED_SIZE,
+_Static_assert(sizeof(OPAL_COMPLEX_LONG_DOUBLE_T) <= OPAL_DATATYPE_MAX_PREDEFINED_SIZE,
                "OPAL_DATATYPE_MAX_PREDEFINED_SIZE too small for long double _Complex");
 _Static_assert(OPAL_SIZEOF_FLOAT16 <= OPAL_DATATYPE_MAX_PREDEFINED_SIZE,
                "OPAL_DATATYPE_MAX_PREDEFINED_SIZE too small for FLOAT16");
@@ -414,6 +414,20 @@ int32_t opal_datatype_init(void)
     opal_class_initialize(OBJ_CLASS(opal_datatype_t));
     for (i = OPAL_DATATYPE_FIRST_TYPE; i < OPAL_DATATYPE_MAX_PREDEFINED; i++) {
         datatype = opal_datatype_basicDatatypes[i];
+
+#if defined(_MSC_VER)
+        /* The static initializer cannot hold &dllimport'd data under
+         * MSVC (open-mpi.dll imports this table), so desc.desc was left
+         * NULL at compile time; attach this type's table slots now. */
+        if (NULL == datatype->desc.desc) {
+            ((opal_datatype_t *) datatype)->desc.desc
+                = &opal_datatype_predefined_elem_desc[2 * i];
+        }
+        if (NULL == datatype->opt_desc.desc) {
+            ((opal_datatype_t *) datatype)->opt_desc.desc
+                = &opal_datatype_predefined_elem_desc[2 * i];
+        }
+#endif
 
         /* All of the predefined OPAL types don't have any GAPS! */
         datatype->desc.desc[0].elem.common.flags = OPAL_DATATYPE_FLAG_PREDEFINED

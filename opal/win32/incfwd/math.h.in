@@ -1,0 +1,5 @@
+#ifndef OPAL_WIN32_FWD_MATH_H
+#define OPAL_WIN32_FWD_MATH_H
+#include "@OPAL_CRT_UCRT@/math.h"
+#include "opal_win32_common.h"
+#endif

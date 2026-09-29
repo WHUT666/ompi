@@ -142,7 +142,7 @@ static int scoll_null_alltoall(struct oshmem_group_t *group,
 /*
  * Stuff for the OBJ interface
  */
-static OBJ_CLASS_INSTANCE(avail_com_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(avail_com_t, opal_list_item_t, NULL, NULL);
 
 #define COPY(module, group, func)                                        \
     do {                                                                \

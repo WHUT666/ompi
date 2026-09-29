@@ -364,9 +364,16 @@ OP_FUNC(sum, c_short_float_complex, short float _Complex, +=)
 #elif defined(HAVE_OPAL_SHORT_FLOAT_COMPLEX_T)
 COMPLEX_SUM_FUNC(c_short_float_complex, opal_short_float_t)
 #endif
+#if defined(_MSC_VER)
+/* MSVC C mode has no _Complex; use the pair-of-reals helpers */
+COMPLEX_SUM_FUNC(c_float_complex, float)
+COMPLEX_SUM_FUNC(c_double_complex, double)
+COMPLEX_SUM_FUNC(c_long_double_complex, long double)
+#else
 OP_FUNC(sum, c_float_complex, float _Complex, +=)
 OP_FUNC(sum, c_double_complex, double _Complex, +=)
 OP_FUNC(sum, c_long_double_complex, long double _Complex, +=)
+#endif
 #if OMPI_OP_BASE_HAVE_FLOAT128_COMPLEX
 OP_FUNC(sum, c_float128_complex, OMPI_OP_BASE_FLOAT128_COMPLEX_T, +=)
 #endif
@@ -439,9 +446,15 @@ OP_FUNC(prod, c_short_float_complex, short float _Complex, *=)
 #elif defined(HAVE_OPAL_SHORT_FLOAT_COMPLEX_T)
 COMPLEX_PROD_FUNC(c_short_float_complex, opal_short_float_t)
 #endif
+#if defined(_MSC_VER)
+COMPLEX_PROD_FUNC(c_float_complex, float)
+COMPLEX_PROD_FUNC(c_double_complex, double)
+COMPLEX_PROD_FUNC(c_long_double_complex, long double)
+#else
 OP_FUNC(prod, c_float_complex, float _Complex, *=)
 OP_FUNC(prod, c_double_complex, double _Complex, *=)
 OP_FUNC(prod, c_long_double_complex, long double _Complex, *=)
+#endif
 #if OMPI_OP_BASE_HAVE_FLOAT128_COMPLEX
 OP_FUNC(prod, c_float128_complex, OMPI_OP_BASE_FLOAT128_COMPLEX_T, *=)
 #endif
@@ -1030,9 +1043,15 @@ OP_FUNC_3BUF(sum, c_short_float_complex, short float _Complex, +)
 #elif defined(HAVE_OPAL_SHORT_FLOAT_COMPLEX_T)
 COMPLEX_SUM_FUNC_3BUF(c_short_float_complex, opal_short_float_t)
 #endif
+#if defined(_MSC_VER)
+COMPLEX_SUM_FUNC_3BUF(c_float_complex, float)
+COMPLEX_SUM_FUNC_3BUF(c_double_complex, double)
+COMPLEX_SUM_FUNC_3BUF(c_long_double_complex, long double)
+#else
 OP_FUNC_3BUF(sum, c_float_complex, float _Complex, +)
 OP_FUNC_3BUF(sum, c_double_complex, double _Complex, +)
 OP_FUNC_3BUF(sum, c_long_double_complex, long double _Complex, +)
+#endif
 #if OMPI_OP_BASE_HAVE_FLOAT128_COMPLEX
 OP_FUNC_3BUF(sum, c_float128_complex, OMPI_OP_BASE_FLOAT128_COMPLEX_T, +)
 #endif
@@ -1105,9 +1124,15 @@ OP_FUNC_3BUF(prod, c_short_float_complex, short float _Complex, *)
 #elif defined(HAVE_OPAL_SHORT_FLOAT_COMPLEX_T)
 COMPLEX_PROD_FUNC_3BUF(c_short_float_complex, opal_short_float_t)
 #endif
+#if defined(_MSC_VER)
+COMPLEX_PROD_FUNC_3BUF(c_float_complex, float)
+COMPLEX_PROD_FUNC_3BUF(c_double_complex, double)
+COMPLEX_PROD_FUNC_3BUF(c_long_double_complex, long double)
+#else
 OP_FUNC_3BUF(prod, c_float_complex, float _Complex, *)
 OP_FUNC_3BUF(prod, c_double_complex, double _Complex, *)
 OP_FUNC_3BUF(prod, c_long_double_complex, long double _Complex, *)
+#endif
 #if OMPI_OP_BASE_HAVE_FLOAT128_COMPLEX
 OP_FUNC_3BUF(prod, c_float128_complex, OMPI_OP_BASE_FLOAT128_COMPLEX_T, *)
 #endif

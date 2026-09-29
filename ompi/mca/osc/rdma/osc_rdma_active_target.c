@@ -49,7 +49,7 @@ struct ompi_osc_rdma_pending_post_t {
 };
 typedef struct ompi_osc_rdma_pending_post_t ompi_osc_rdma_pending_post_t;
 
-static OBJ_CLASS_INSTANCE(ompi_osc_rdma_pending_post_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(ompi_osc_rdma_pending_post_t, opal_list_item_t, NULL, NULL);
 
 static void ompi_osc_rdma_pending_op_construct (ompi_osc_rdma_pending_op_t *pending_op)
 {

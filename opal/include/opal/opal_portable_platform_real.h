@@ -906,7 +906,8 @@
 
 #elif defined(__x86_64) || defined(__x86_64__) || \
     defined(__athlon) || defined(__athlon__) || \
-    defined(__amd64)  || defined(__amd64__)
+    defined(__amd64)  || defined(__amd64__) || \
+    defined(_M_X64) || defined(_M_AMD64)
   #define PLATFORM_ARCH_X86_64 1
   #define PLATFORM_ARCH_FAMILYNAME X86_64
   #define _PLATFORM_ARCH_64 1
@@ -1011,12 +1012,13 @@
     #define _PLATFORM_ARCH_LITTLE_ENDIAN 1
   #endif
 
-#elif defined(__aarch64__)
+#elif defined(__aarch64__) || defined(_M_ARM64)
   #define PLATFORM_ARCH_AARCH64 1
   #define PLATFORM_ARCH_FAMILYNAME AARCH64
   #if defined(__AARCH64EB__)
     #define _PLATFORM_ARCH_BIG_ENDIAN 1
-  #elif defined(__AARCH64EL__)
+  #elif defined(__AARCH64EL__) || defined(_M_ARM64)
+    /* Windows ARM64 is always little-endian */
     #define _PLATFORM_ARCH_LITTLE_ENDIAN 1
   #endif
 

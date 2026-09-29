@@ -105,6 +105,15 @@ bool opal_path_is_absolute(const char *path)
     if (OPAL_PATH_SEP[0] == *path) {
         return true;
     }
+#ifdef _WIN32
+    /* X:\... or X:/... -- also accept bare '/' since Win32 APIs do */
+    if ('/' == *path
+        || (path[0] && ':' == path[1]
+            && ((path[0] >= 'a' && path[0] <= 'z')
+                || (path[0] >= 'A' && path[0] <= 'Z')))) {
+        return true;
+    }
+#endif
     return false;
 }
 
@@ -245,12 +254,37 @@ char *opal_path_access(char *fname, char *path, int mode)
      * only want files
      */
     if (0 != stat(fullpath, &buf)) {
+#ifdef _WIN32
+        /* Windows executables carry an extension; when the caller did
+         * not supply one, probe the PATHEXT extensions before giving
+         * up ("cl" must find "cl.exe" or "cl.exe" in each dir). */
+        if (NULL == strrchr(fname, '.')) {
+            static const char *exts[] = {".exe", ".bat", ".cmd", ".com", NULL};
+            for (int e = 0; exts[e]; ++e) {
+                char *try_ext;
+                opal_asprintf(&try_ext, "%s%s", fullpath, exts[e]);
+                if (NULL == try_ext) {
+                    continue;
+                }
+                if (0 == stat(try_ext, &buf)) {
+                    free(fullpath);
+                    fullpath = try_ext;
+                    goto statted;
+                }
+                free(try_ext);
+            }
+        }
+#endif
         /* couldn't stat the path - obviously, this also meets the
          * existence check, if that was requested
          */
         free(fullpath);
         return NULL;
     }
+#ifdef _WIN32
+statted:
+    ;
+#endif
 
     if (!(S_IFREG & buf.st_mode) && !(S_IFLNK & buf.st_mode)) {
         /* this isn't a regular file or a symbolic link, so

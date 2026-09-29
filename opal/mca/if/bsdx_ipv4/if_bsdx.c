@@ -121,7 +121,11 @@ static int if_bsdx_open(void)
         intf->if_index = opal_list_get_size(&opal_if_list) + 1;
         ((struct sockaddr_in *) &intf->if_addr)->sin_addr = a4;
         ((struct sockaddr_in *) &intf->if_addr)->sin_family = AF_INET;
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+        /* BSD keeps the sockaddr length inside the struct; winsock
+         * has no sa_len member */
         ((struct sockaddr_in *) &intf->if_addr)->sin_len = cur_ifaddrs->ifa_addr->sa_len;
+#endif
 
         intf->if_mask = prefix(sin_addr->sin_addr.s_addr);
         intf->if_flags = cur_ifaddrs->ifa_flags;

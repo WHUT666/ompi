@@ -290,11 +290,11 @@ COPY_TYPE(short_float_complex, opal_short_float_complex_t, 1)
 #    define copy_short_float_complex NULL
 #endif
 
-COPY_TYPE(float_complex, float _Complex, 1)
+COPY_TYPE(float_complex, OPAL_COMPLEX_FLOAT_T, 1)
 
-COPY_TYPE(double_complex, double _Complex, 1)
+COPY_TYPE(double_complex, OPAL_COMPLEX_DOUBLE_T, 1)
 
-COPY_TYPE(long_double_complex, long double _Complex, 1)
+COPY_TYPE(long_double_complex, OPAL_COMPLEX_LONG_DOUBLE_T, 1)
 
 #if defined(HAVE__FLOAT128) && defined(HAVE__FLOAT128__COMPLEX)
 COPY_TYPE(float128_complex, _Float128 _Complex, 1)

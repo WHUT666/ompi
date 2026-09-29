@@ -160,26 +160,55 @@ struct opal_class_t {
     opal_destruct_t *cls_destruct_array;
     /**< array of parent class destructors */
     size_t cls_sizeof; /**< size of an object instance */
+#if defined(_MSC_VER)
+    /* MSVC cannot form the address of __declspec(dllimport) data inside
+     * a static initializer, so a class whose parent descriptor lives in
+     * another DLL stores a resolver thunk here instead; resolved lazily
+     * by opal_class_initialize(). */
+    opal_class_t *(*cls_parent_resolver)(void);
+#endif
 };
 
-extern int opal_class_init_epoch;
+OPAL_DECLSPEC extern int opal_class_init_epoch;
 
 /**
  * For static initializations of OBJects.
  *
  * @param NAME   Name of the class to initialize
  */
+/* MSVC cannot form the address of __declspec(dllimport) data inside a
+ * static initializer, so objects statically initialized with a class
+ * descriptor from another DLL must leave obj_class NULL.  The class
+ * pointer is only consumed by opal_obj_run_constructors/destructors
+ * (NULL-guarded below) and by OBJ_CONSTRUCT, which assigns it first. */
 #if OPAL_ENABLE_DEBUG
-#    define OPAL_OBJ_STATIC_INIT(BASE_CLASS)                                                       \
-        {                                                                                          \
-            .obj_magic_id = OPAL_OBJ_MAGIC_ID, .obj_class = OBJ_CLASS(BASE_CLASS),                 \
-            .obj_reference_count = 1, .cls_init_file_name = __FILE__, .cls_init_lineno = __LINE__, \
-        }
+#    if defined(_MSC_VER)
+#        define OPAL_OBJ_STATIC_INIT(BASE_CLASS)                                       \
+            {                                                                          \
+                .obj_magic_id = OPAL_OBJ_MAGIC_ID, .obj_class = NULL,                  \
+                .obj_reference_count = 1, .cls_init_file_name = __FILE__,              \
+                .cls_init_lineno = __LINE__,                                           \
+            }
+#    else
+#        define OPAL_OBJ_STATIC_INIT(BASE_CLASS)                                       \
+            {                                                                          \
+                .obj_magic_id = OPAL_OBJ_MAGIC_ID, .obj_class = OBJ_CLASS(BASE_CLASS), \
+                .obj_reference_count = 1, .cls_init_file_name = __FILE__,              \
+                .cls_init_lineno = __LINE__,                                           \
+            }
+#    endif
 #else
-#    define OPAL_OBJ_STATIC_INIT(BASE_CLASS)                              \
-        {                                                                 \
-            .obj_class = OBJ_CLASS(BASE_CLASS), .obj_reference_count = 1, \
-        }
+#    if defined(_MSC_VER)
+#        define OPAL_OBJ_STATIC_INIT(BASE_CLASS)                              \
+            {                                                                 \
+                .obj_class = NULL, .obj_reference_count = 1,                  \
+            }
+#    else
+#        define OPAL_OBJ_STATIC_INIT(BASE_CLASS)                              \
+            {                                                                 \
+                .obj_class = OBJ_CLASS(BASE_CLASS), .obj_reference_count = 1, \
+            }
+#    endif
 #endif
 
 /**
@@ -223,16 +252,60 @@ struct opal_object_t {
  *
  * Put this in NAME.c
  */
-#define OBJ_CLASS_INSTANCE(NAME, PARENT, CONSTRUCTOR, DESTRUCTOR) \
-    opal_class_t NAME##_class = {#NAME,                           \
-                                 OBJ_CLASS(PARENT),               \
-                                 (opal_construct_t) CONSTRUCTOR,  \
-                                 (opal_destruct_t) DESTRUCTOR,    \
-                                 0,                               \
-                                 0,                               \
-                                 NULL,                            \
-                                 NULL,                            \
-                                 sizeof(NAME)}
+#if defined(_MSC_VER)
+/* MSVC cannot take the address of __declspec(dllimport) data inside a
+ * static initializer, so a class whose parent descriptor lives in a
+ * different DLL cannot be constant-initialized.  Emit the descriptor
+ * with a NULL parent plus a resolver thunk that returns the parent
+ * address at run time; opal_class_initialize() applies it on first use.
+ * The resolver is emitted before the class object because the object
+ * initializer references it; callers that need file-local storage use
+ * OBJ_CLASS_INSTANCE_STATIC.
+ */
+#    define OBJ_CLASS_INSTANCE(NAME, PARENT, CONSTRUCTOR, DESTRUCTOR)          \
+        opal_class_t *NAME##_class_parent_resolver(void)                       \
+        {                                                                      \
+            return OBJ_CLASS(PARENT);                                          \
+        }                                                                      \
+        opal_class_t NAME##_class = {#NAME,                                    \
+                                     NULL,                                     \
+                                     (opal_construct_t) CONSTRUCTOR,           \
+                                     (opal_destruct_t) DESTRUCTOR,             \
+                                     0,                                        \
+                                     0,                                        \
+                                     NULL,                                     \
+                                     NULL,                                     \
+                                     sizeof(NAME),                             \
+                                     NAME##_class_parent_resolver}
+#    define OBJ_CLASS_INSTANCE_STATIC(NAME, PARENT, CONSTRUCTOR, DESTRUCTOR)   \
+        static opal_class_t *NAME##_class_parent_resolver(void)                \
+        {                                                                      \
+            return OBJ_CLASS(PARENT);                                          \
+        }                                                                      \
+        static opal_class_t NAME##_class = {#NAME,                             \
+                                            NULL,                              \
+                                            (opal_construct_t) CONSTRUCTOR,    \
+                                            (opal_destruct_t) DESTRUCTOR,      \
+                                            0,                                 \
+                                            0,                                 \
+                                            NULL,                              \
+                                            NULL,                              \
+                                            sizeof(NAME),                      \
+                                            NAME##_class_parent_resolver}
+#else
+#    define OBJ_CLASS_INSTANCE(NAME, PARENT, CONSTRUCTOR, DESTRUCTOR) \
+        opal_class_t NAME##_class = {#NAME,                           \
+                                     OBJ_CLASS(PARENT),               \
+                                     (opal_construct_t) CONSTRUCTOR,  \
+                                     (opal_destruct_t) DESTRUCTOR,    \
+                                     0,                               \
+                                     0,                               \
+                                     NULL,                            \
+                                     NULL,                            \
+                                     sizeof(NAME)}
+#    define OBJ_CLASS_INSTANCE_STATIC(NAME, PARENT, CONSTRUCTOR, DESTRUCTOR) \
+        static OBJ_CLASS_INSTANCE(NAME, PARENT, CONSTRUCTOR, DESTRUCTOR)
+#endif
 
 /**
  * Declaration for class descriptor
@@ -466,6 +539,14 @@ static inline void opal_obj_run_destructors(opal_object_t *object)
 {
     opal_destruct_t *cls_destruct;
 
+#if defined(_MSC_VER)
+    /* Windows objects initialized via OPAL_OBJ_STATIC_INIT carry a
+     * NULL class (the address of dllimport'd data is not a constant
+     * expression); they have no destructors to run. */
+    if (NULL == object->obj_class) {
+        return;
+    }
+#endif
     assert(NULL != object->obj_class);
 
     cls_destruct = object->obj_class->cls_destruct_array;

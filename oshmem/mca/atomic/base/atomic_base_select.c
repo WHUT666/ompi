@@ -63,7 +63,7 @@ static int query_1_0_0(const mca_atomic_base_component_1_0_0_t * atomic_componen
 /*
  * Stuff for the OBJ interface
  */
-static OBJ_CLASS_INSTANCE(avail_com_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(avail_com_t, opal_list_item_t, NULL, NULL);
 
 /*
  * This function is called at the initialization.

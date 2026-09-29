@@ -272,10 +272,32 @@
 #    define __opal_attribute_extension__
 #endif
 
-#if OPAL_C_HAVE_VISIBILITY
+#if defined(_MSC_VER)
+#    if defined(OPAL_BUILDING)
+#        define OPAL_DECLSPEC __declspec(dllexport)
+#        define OPAL_HIDDEN
+#    else
+#        define OPAL_DECLSPEC __declspec(dllimport)
+#        define OPAL_HIDDEN
+#    endif
+/* MSVC C mode does not provide max_align_t (it exists only for C++).
+   OPAL_ALIGN_MIN feeds off _Alignof(max_align_t); Windows malloc returns
+   16-byte-aligned blocks on x64, so a 16-aligned union is the correct
+   stand-in. */
+#    if !defined(__cplusplus) && !defined(_M_CEE_PURE)
+typedef __declspec(align(16)) union {
+    long long opal_max_align_ll;
+    long double opal_max_align_ld;
+    void *opal_max_align_ptr;
+    unsigned char opal_max_align_pad[16];
+} max_align_t;
+#    endif
+#elif OPAL_C_HAVE_VISIBILITY
 #    define OPAL_DECLSPEC        __opal_attribute_visibility__("default")
+#    define OPAL_HIDDEN          __opal_attribute_visibility__("hidden")
 #else
 #    define OPAL_DECLSPEC
+#    define OPAL_HIDDEN
 #endif
 
 #if !defined(__STDC_LIMIT_MACROS) && (defined(c_plusplus) || defined(__cplusplus))
@@ -313,8 +335,13 @@
 /*
  * Set the compile-time path-separator on this system and variable separator
  */
-#    define OPAL_PATH_SEP "/"
-#    define OPAL_ENV_SEP  ':'
+#    if defined(_WIN32)
+#        define OPAL_PATH_SEP "\\"
+#        define OPAL_ENV_SEP  ';'
+#    else
+#        define OPAL_PATH_SEP "/"
+#        define OPAL_ENV_SEP  ':'
+#    endif
 
 #    if defined(MAXHOSTNAMELEN)
 #        define OPAL_MAXHOSTNAMELEN (MAXHOSTNAMELEN + 1)
@@ -584,6 +611,63 @@ typedef struct {
 #    define SSIZE_MAX LONG_LONG_MAX
 #  endif
 #endif
+
+#    if defined(_MSC_VER)
+/* MSVC C mode does not know the GNU spellings of 'restrict' */
+#        ifndef __restrict__
+#            define __restrict__ __restrict
+#        endif
+/* MSVC <limits.h> provides LLONG_MAX but not the GNU LONG_LONG_MAX
+ * spellings that a few places (e.g. coll/tuned dynamic rules) use */
+#        include <limits.h>
+#        ifndef LONG_LONG_MAX
+#            define LONG_LONG_MAX LLONG_MAX
+#            define LONG_LONG_MIN LLONG_MIN
+#            define ULONG_LONG_MAX ULLONG_MAX
+#        endif
+/* MSVC has no __builtin_ctz/clz/popcount; map them onto the
+ * _BitScanForward/Reverse and __popcnt intrinsics. A handful of
+ * call sites use these unconditionally (e.g. coll/base allgather). */
+#        include <intrin.h>
+static __forceinline int opal_builtin_ctz32(unsigned int v)
+{
+    unsigned long i;
+    _BitScanForward(&i, v);
+    return (int) i;
+}
+static __forceinline int opal_builtin_clz32(unsigned int v)
+{
+    unsigned long i;
+    _BitScanReverse(&i, v);
+    return 31 - (int) i;
+}
+static __forceinline int opal_builtin_ctz64(unsigned long long v)
+{
+    unsigned long i;
+    _BitScanForward64(&i, v);
+    return (int) i;
+}
+static __forceinline int opal_builtin_clz64(unsigned long long v)
+{
+    unsigned long i;
+    _BitScanReverse64(&i, v);
+    return 63 - (int) i;
+}
+static __forceinline int opal_builtin_ffs32(int v)
+{
+    unsigned long i;
+    return _BitScanForward(&i, (unsigned int) v) ? (int) i + 1 : 0;
+}
+#        ifndef __builtin_ctz
+#            define __builtin_ctz opal_builtin_ctz32
+#            define __builtin_ctzll opal_builtin_ctz64
+#            define __builtin_clz opal_builtin_clz32
+#            define __builtin_clzll opal_builtin_clz64
+#            define __builtin_popcount __popcnt
+#            define __builtin_popcountll __popcnt64
+#            define __builtin_ffs opal_builtin_ffs32
+#        endif
+#    endif
 
 #else
 

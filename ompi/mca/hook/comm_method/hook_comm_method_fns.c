@@ -651,7 +651,9 @@ ompi_report_comm_methods(int called_from_location)
         if (nleaderranks <= max2Dprottable) {
             char *str, *p;
             int tmp, per, has_ucx_transport, bufsize;
-            int strlens[NUM_COMM_METHODS];
+            /* NUM_COMM_METHODS is a run-time value; MSVC has no VLA
+             * support, so allocate the table on the heap */
+            int *strlens = malloc(NUM_COMM_METHODS * sizeof(int));
 
             // characters per entry in the 2d table, must be large enough
             // for the digits needed for host numbers, and for whatever is
@@ -760,12 +762,15 @@ ompi_report_comm_methods(int called_from_location)
                 }
             }
             free(methods_used);
+            free(strlens);
         }
         else if (nleaderranks <= max2D1Cprottable) {
             char *str, *p;
             int tmp, per, done, bufsize;
-            char char_code[NUM_COMM_METHODS], next_char;
-            int method_count[NUM_COMM_METHODS];
+            /* NUM_COMM_METHODS is a run-time value; MSVC has no VLA
+             * support, so allocate the tables on the heap */
+            char *char_code = malloc(NUM_COMM_METHODS), next_char;
+            int *method_count = malloc(NUM_COMM_METHODS * sizeof(int));
 
             // characters for the number column in the 2d table,
             // must be large enough for the digits needed for host numbers
@@ -850,13 +855,17 @@ ompi_report_comm_methods(int called_from_location)
                 }
             }
             printf("\n");
+            free(char_code);
+            free(method_count);
         }
 // 3: abbreviated summary of interconnect and outliers
 // - check diagonal for uniformity + self, save majority method
 // - check non-diagonal for uniformity, save majority method
 // - print ranks with non-majority settings
         {
-            int method_count[NUM_COMM_METHODS];
+            /* NUM_COMM_METHODS is a run-time value; MSVC has no VLA
+             * support, so allocate the table on the heap */
+            int *method_count = malloc(NUM_COMM_METHODS * sizeof(int));
             int majority_method_onhost;
             int majority_method_offhost;
             int uniformity_onhost;
@@ -1003,6 +1012,7 @@ ompi_report_comm_methods(int called_from_location)
                 }
             }
             printf("\n");
+            free(method_count);
         }
     }
 

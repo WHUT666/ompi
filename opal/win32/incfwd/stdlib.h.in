@@ -1,0 +1,36 @@
+#ifndef OPAL_WIN32_FWD_STDLIB_H
+#define OPAL_WIN32_FWD_STDLIB_H
+#include "opal_win32_common.h"
+#include "@OPAL_CRT_UCRT@/stdlib.h"
+#ifndef environ
+#    define environ _environ
+#endif
+#ifndef putenv
+#    define putenv _putenv
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+OPAL_WIN32_DECLSPEC int setenv(const char *name, const char *value, int overwrite);
+OPAL_WIN32_DECLSPEC int unsetenv(const char *name);
+char        *realpath(const char *path, char *resolved_path);
+int          mkstemp(char *template_);
+int          mkstemps(char *template_, int suffixlen);
+char        *mkdtemp(char *template_);
+OPAL_WIN32_DECLSPEC int posix_memalign(void **memptr, size_t alignment, size_t size);
+OPAL_WIN32_DECLSPEC long random(void);
+OPAL_WIN32_DECLSPEC void srandom(unsigned int seed);
+OPAL_WIN32_DECLSPEC int getloadavg(double loadavg[], int nelem);
+OPAL_WIN32_DECLSPEC int daemon(int nochdir, int noclose);
+OPAL_WIN32_DECLSPEC int posix_openpt(int flags);
+OPAL_WIN32_DECLSPEC int grantpt(int fd);
+OPAL_WIN32_DECLSPEC int unlockpt(int fd);
+char        *ptsname(int fd);
+OPAL_WIN32_DECLSPEC int ptsname_r(int fd, char *buf, size_t buflen);
+void        *valloc(size_t size);
+void        *memalign(size_t alignment, size_t size);
+int          clearenv(void);
+#ifdef __cplusplus
+}
+#endif
+#endif /* OPAL_WIN32_FWD_STDLIB_H */

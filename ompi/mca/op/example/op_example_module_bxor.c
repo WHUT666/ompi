@@ -102,7 +102,7 @@ static void module_bxor_destructor(module_bxor_t *m)
  * - function pointer for the constructor (or NULL)
  * - function pointer for the destructor (or NULL)
  */
-static OBJ_CLASS_INSTANCE(module_bxor_t,
+OBJ_CLASS_INSTANCE_STATIC(module_bxor_t,
                           ompi_op_base_module_t,
                           module_bxor_constructor,
                           module_bxor_destructor);

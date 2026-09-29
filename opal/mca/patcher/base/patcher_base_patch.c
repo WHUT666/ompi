@@ -24,6 +24,11 @@
 #include "opal/util/sys_limits.h"
 #include <sys/mman.h>
 
+#if defined(_MSC_VER) && defined(PLATFORM_ARCH_X86_64)
+#    include <intrin.h>
+#    include <emmintrin.h>
+#endif
+
 static void mca_patcher_base_patch_construct(mca_patcher_base_patch_t *patch)
 {
     patch->patch_symbol = NULL;
@@ -113,7 +118,14 @@ static void flush_and_invalidate_cache(unsigned long a)
         __asm__ volatile("mfence;clflush %0;mfence" : : "m"(*(char *) a));
     }
 #    elif defined(PLATFORM_ARCH_X86_64)
+#        if defined(_MSC_VER)
+    /* MSVC: use the clflush/mfence intrinsics instead of GNU asm */
+    _mm_mfence();
+    _mm_clflush((const void *) a);
+    _mm_mfence();
+#        else
     __asm__ volatile("mfence;clflush %0;mfence" : : "m"(*(char *) a));
+#        endif
 #    elif defined(PLATFORM_ARCH_AARCH64)
     __asm__ volatile("dc cvau, %0\n\t"
                      "dsb ish\n\t"

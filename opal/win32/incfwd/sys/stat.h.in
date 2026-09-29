@@ -1,0 +1,135 @@
+#ifndef OPAL_WIN32_FWD_SYS_STAT_H
+#define OPAL_WIN32_FWD_SYS_STAT_H
+#include "opal_win32_common.h"
+#include "@OPAL_CRT_UCRT@/sys/stat.h"
+#ifndef _MODE_T_DEFINED
+#    define _MODE_T_DEFINED
+typedef unsigned short mode_t;
+#endif
+#ifndef _NLINK_T_DEFINED
+#    define _NLINK_T_DEFINED
+typedef unsigned int nlink_t;
+#endif
+#ifndef _BLKSIZE_T_DEFINED
+#    define _BLKSIZE_T_DEFINED
+typedef long blksize_t;
+#endif
+#ifndef _BLKCNT_T_DEFINED
+#    define _BLKCNT_T_DEFINED
+typedef long long blkcnt_t;
+#endif
+#ifndef S_IRUSR
+#    define S_IRUSR _S_IREAD
+#endif
+#ifndef S_IWUSR
+#    define S_IWUSR _S_IWRITE
+#endif
+#ifndef S_IXUSR
+#    define S_IXUSR _S_IEXEC
+#endif
+#ifndef S_IRWXU
+#    define S_IRWXU (S_IRUSR | S_IWUSR | S_IXUSR)
+#endif
+#ifndef S_IRGRP
+#    define S_IRGRP (S_IRUSR >> 3)
+#endif
+#ifndef S_IWGRP
+#    define S_IWGRP (S_IWUSR >> 3)
+#endif
+#ifndef S_IXGRP
+#    define S_IXGRP (S_IXUSR >> 3)
+#endif
+#ifndef S_IRWXG
+#    define S_IRWXG (S_IRWXU >> 3)
+#endif
+#ifndef S_IROTH
+#    define S_IROTH (S_IRGRP >> 3)
+#endif
+#ifndef S_IWOTH
+#    define S_IWOTH (S_IWGRP >> 3)
+#endif
+#ifndef S_IXOTH
+#    define S_IXOTH (S_IXGRP >> 3)
+#endif
+#ifndef S_IRWXO
+#    define S_IRWXO (S_IRWXG >> 3)
+#endif
+#ifndef S_ISUID
+#    define S_ISUID 04000
+#endif
+#ifndef S_ISGID
+#    define S_ISGID 02000
+#endif
+#ifndef S_ISVTX
+#    define S_ISVTX 01000
+#endif
+#ifndef S_IFLNK
+#    define S_IFLNK 0120000
+#endif
+#ifndef S_IFSOCK
+#    define S_IFSOCK 0140000
+#endif
+#ifndef S_ISLNK
+#    define S_ISLNK(m) (0)
+#endif
+#ifndef S_ISSOCK
+#    define S_ISSOCK(m) (0)
+#endif
+#ifndef S_ISFIFO
+#    define S_ISFIFO(m) (((m) & _S_IFMT) == _S_IFIFO)
+#endif
+#ifndef S_ISCHR
+#    define S_ISCHR(m) (((m) & _S_IFMT) == _S_IFCHR)
+#endif
+#ifndef S_ISDIR
+#    define S_ISDIR(m) (((m) & _S_IFMT) == _S_IFDIR)
+#endif
+#ifndef S_ISREG
+#    define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
+#endif
+#ifndef S_ISBLK
+#    define S_ISBLK(m) (0)
+#endif
+/* largefile aliases: struct stat64 / off64_t map onto the CRT 64-bit
+ * variants */
+#ifndef stat64
+#    define stat64 _stat64
+#endif
+#ifndef fstat64
+#    define fstat64 _fstat64
+#endif
+#ifndef lstat64
+#    define lstat64 stat64
+#endif
+/* POSIX mkdir takes (path, mode); the CRT one takes only (path) */
+#ifndef mkdir
+#    define mkdir(p, m) _mkdir(p)
+#endif
+#ifndef chmod
+#    define chmod _chmod
+#endif
+#ifndef umask
+#    define umask _umask
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* literal names -- implemented in opal_win32_compat.c / _fs.c */
+OPAL_WIN32_DECLSPEC int lstat(const char *path, struct stat *buf);
+OPAL_WIN32_DECLSPEC int fchmod(int fd, mode_t mode);
+OPAL_WIN32_DECLSPEC int mkfifo(const char *path, mode_t mode);
+OPAL_WIN32_DECLSPEC int mknod(const char *path, mode_t mode, dev_t dev);
+OPAL_WIN32_DECLSPEC int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags);
+OPAL_WIN32_DECLSPEC int mkdirat(int dirfd, const char *pathname, mode_t mode);
+OPAL_WIN32_DECLSPEC int utimensat(int dirfd, const char *pathname, const struct timespec times[2],
+              int flags);
+#ifdef __cplusplus
+}
+#endif
+#ifndef UTIME_NOW
+#    define UTIME_NOW ((1l << 30) - 1l)
+#endif
+#ifndef UTIME_OMIT
+#    define UTIME_OMIT ((1l << 30) - 2l)
+#endif
+#endif /* OPAL_WIN32_FWD_SYS_STAT_H */

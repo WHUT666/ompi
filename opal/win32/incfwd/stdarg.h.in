@@ -1,0 +1,5 @@
+#ifndef OPAL_WIN32_FWD_STDARG_H
+#define OPAL_WIN32_FWD_STDARG_H
+#include "@OPAL_CRT_MSVC@/stdarg.h"
+#include "opal_win32_common.h"
+#endif

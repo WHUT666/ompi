@@ -1,0 +1,38 @@
+#ifndef OPAL_WIN32_FWD_STDIO_H
+#define OPAL_WIN32_FWD_STDIO_H
+#include "opal_win32_common.h"
+#include "@OPAL_CRT_UCRT@/stdio.h"
+#include <stdarg.h>
+#ifndef popen
+#    define popen _popen
+#endif
+#ifndef pclose
+#    define pclose _pclose
+#endif
+#ifndef fileno
+#    define fileno _fileno
+#endif
+#ifndef FDOPEN_MAX
+#    define FDOPEN_MAX _NFILE
+#endif
+#ifndef P_tmpdir
+#    define P_tmpdir "C:\\Temp"
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* functions absent from the UCRT -- declared literally (no name
+ * collision, no macro indirection) */
+OPAL_WIN32_DECLSPEC int dprintf(int fd, const char *format, ...);
+OPAL_WIN32_DECLSPEC int vdprintf(int fd, const char *format, va_list ap);
+OPAL_WIN32_DECLSPEC int asprintf(char **ret, const char *format, ...);
+OPAL_WIN32_DECLSPEC int vasprintf(char **ret, const char *format, va_list ap);
+OPAL_WIN32_DECLSPEC ssize_t getline(char **lineptr, size_t *n, FILE *stream);
+OPAL_WIN32_DECLSPEC ssize_t getdelim(char **lineptr, size_t *n, int delim, FILE *stream);
+/* getw/putw exist in the UCRT (nonstandard); no declarations needed here */
+OPAL_WIN32_DECLSPEC void setlinebuf(FILE *stream);
+char   *fgetln(FILE *stream, size_t *len);
+#ifdef __cplusplus
+}
+#endif
+#endif /* OPAL_WIN32_FWD_STDIO_H */

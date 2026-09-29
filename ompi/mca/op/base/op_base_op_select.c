@@ -77,7 +77,7 @@ static int query_1_0_0(const ompi_op_base_component_1_0_0_t *op_component,
 /*
  * Stuff for the OBJ interface
  */
-static OBJ_CLASS_INSTANCE(avail_op_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(avail_op_t, opal_list_item_t, NULL, NULL);
 
 
 /*

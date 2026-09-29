@@ -23,24 +23,27 @@
 
 /*************************** HEADER FILES ***************************/
 #include <stddef.h>
+#include <stdint.h>
 
 /****************************** MACROS ******************************/
 #define OPAL_SHA256_BLOCK_SIZE 32            // SHA256 outputs a 32 byte digest
 
 /**************************** DATA TYPES ****************************/
-typedef unsigned char BYTE;             // 8-bit byte
-typedef unsigned int  WORD;             // 32-bit word, change to "long" for 16-bit machines
+/* NOTE: fixed-width prefixed names -- the original code typedef'd
+ * BYTE/WORD which collide with the Win32 SDK types on Windows */
+typedef uint8_t  opal_sha256_byte_t;
+typedef uint32_t opal_sha256_word_t;
 
 typedef struct {
-    BYTE data[64];
-    WORD datalen;
+    opal_sha256_byte_t data[64];
+    opal_sha256_word_t datalen;
     unsigned long long bitlen;
-    WORD state[8];
+    opal_sha256_word_t state[8];
 } opal_sha256_ctx;
 
 /*********************** FUNCTION DECLARATIONS **********************/
 void opal_sha256_init(opal_sha256_ctx *ctx);
-void opal_sha256_update(opal_sha256_ctx *ctx, const BYTE data[], size_t len);
-void opal_sha256_final(opal_sha256_ctx *ctx, BYTE hash[]);
+void opal_sha256_update(opal_sha256_ctx *ctx, const opal_sha256_byte_t data[], size_t len);
+void opal_sha256_final(opal_sha256_ctx *ctx, opal_sha256_byte_t hash[]);
 
 #endif   // OPAL_SHA256_H

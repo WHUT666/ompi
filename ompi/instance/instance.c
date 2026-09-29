@@ -171,7 +171,13 @@ OBJ_CLASS_INSTANCE(ompi_instance_t, opal_infosubscriber_t, ompi_instance_constru
 /* NTH: frameworks needed by MPI */
 static mca_base_framework_t *ompi_framework_dependencies[] = {
     &ompi_hook_base_framework, &ompi_op_base_framework,
+#if defined(_MSC_VER)
+    /* &dllimport'd data is not a constant expression; the OPAL entries
+     * are filled in below before first use. */
+    NULL, NULL, NULL, NULL,
+#else
     &opal_allocator_base_framework, &opal_rcache_base_framework, &opal_mpool_base_framework, &opal_smsc_base_framework,
+#endif
     &ompi_bml_base_framework, &ompi_pml_base_framework, &ompi_coll_base_framework,
     &ompi_osc_base_framework, &ompi_part_base_framework, NULL,
 };
@@ -229,6 +235,7 @@ static int ompi_instance_print_error (const char *error, int ret)
     /* Only print a message if one was not already printed */
     if (NULL != error && OMPI_ERR_SILENT != ret) {
         const char *err_msg = opal_strerror(ret);
+        fprintf(stderr, "[ompi-init-error] %s: %s (%d)\n", error, err_msg, ret);
         opal_show_help("help-mpi-runtime.txt",
                        "mpi_init:startup:internal-failure", true,
                        "MPI_INIT", "MPI_INIT", error, err_msg, ret);
@@ -463,6 +470,15 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
      */
     opal_finalize_set_domain (&ompi_instance_common_domain);
 
+#if defined(_MSC_VER)
+    /* see the note at the declaration above */
+    if (NULL == ompi_framework_dependencies[2]) {
+        ompi_framework_dependencies[2] = &opal_allocator_base_framework;
+        ompi_framework_dependencies[3] = &opal_rcache_base_framework;
+        ompi_framework_dependencies[4] = &opal_mpool_base_framework;
+        ompi_framework_dependencies[5] = &opal_smsc_base_framework;
+    }
+#endif
     /* open the ompi hook framework */
     for (int i = 0 ; ompi_framework_dependencies[i] ; ++i) {
         ret = mca_base_framework_open (ompi_framework_dependencies[i], 0);
@@ -500,6 +516,7 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
     if (PMIX_SUCCESS != rc) {
         ompi_default_pmix_err_handler = SIZE_MAX;
         ret = opal_pmix_convert_status(rc);
+        fprintf(stderr, "[ompi-init-error] default pmix errhandler reg: %d\n", ret);
         return ret;
     }
 
@@ -524,6 +541,7 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
     if (PMIX_SUCCESS != rc) {
         ompi_ulfm_pmix_err_handler = SIZE_MAX;
         ret = opal_pmix_convert_status(rc);
+        fprintf(stderr, "[ompi-init-error] ulfm pmix errhandler reg: %d\n", ret);
         return ret;
     }
 
@@ -594,6 +612,7 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
     rc = PMIx_Commit();
     if (PMIX_SUCCESS != rc) {
         ret = opal_pmix_convert_status(rc);
+        fprintf(stderr, "[ompi-init-error] PMIx_Commit: %d\n", ret);
         return ret;  /* TODO: need to fix this */
     }
 

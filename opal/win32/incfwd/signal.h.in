@@ -1,0 +1,171 @@
+#ifndef OPAL_WIN32_FWD_SIGNAL_H
+#define OPAL_WIN32_FWD_SIGNAL_H
+#include "opal_win32_common.h"
+#include "@OPAL_CRT_UCRT@/signal.h"
+/* POSIX signal numbers missing from MSVC (Linux numbering) */
+#ifndef SIGHUP
+#    define SIGHUP 1
+#endif
+#ifndef SIGQUIT
+#    define SIGQUIT 3
+#endif
+#ifndef SIGTRAP
+#    define SIGTRAP 5
+#endif
+#ifndef SIGIOT
+#    define SIGIOT 6
+#endif
+#ifndef SIGBUS
+#    define SIGBUS 7
+#endif
+#ifndef SIGKILL
+#    define SIGKILL 9
+#endif
+#ifndef SIGUSR1
+#    define SIGUSR1 10
+#endif
+#ifndef SIGUSR2
+#    define SIGUSR2 12
+#endif
+#ifndef SIGPIPE
+#    define SIGPIPE 13
+#endif
+#ifndef SIGALRM
+#    define SIGALRM 14
+#endif
+#ifndef SIGSTKFLT
+#    define SIGSTKFLT 16
+#endif
+#ifndef SIGCHLD
+#    define SIGCHLD 17
+#endif
+#ifndef SIGCLD
+#    define SIGCLD SIGCHLD
+#endif
+#ifndef SIGCONT
+#    define SIGCONT 18
+#endif
+#ifndef SIGSTOP
+#    define SIGSTOP 19
+#endif
+#ifndef SIGTSTP
+#    define SIGTSTP 20
+#endif
+#ifndef SIGTTIN
+#    define SIGTTIN 21
+#endif
+#ifndef SIGTTOU
+#    define SIGTTOU 22
+#endif
+#ifndef SIGURG
+#    define SIGURG 23
+#endif
+#ifndef SIGXCPU
+#    define SIGXCPU 24
+#endif
+#ifndef SIGXFSZ
+#    define SIGXFSZ 25
+#endif
+#ifndef SIGVTALRM
+#    define SIGVTALRM 26
+#endif
+#ifndef SIGPROF
+#    define SIGPROF 27
+#endif
+#ifndef SIGWINCH
+#    define SIGWINCH 28
+#endif
+#ifndef SIGIO
+#    define SIGIO 29
+#endif
+#ifndef SIGPOLL
+#    define SIGPOLL SIGIO
+#endif
+#ifndef SIGPWR
+#    define SIGPWR 30
+#endif
+#ifndef SIGSYS
+#    define SIGSYS 31
+#endif
+#ifndef NSIG
+#    define NSIG 65
+#endif
+/* sigaction flags */
+#ifndef SA_NOCLDSTOP
+#    define SA_NOCLDSTOP 0x00000001
+#endif
+#ifndef SA_NOCLDWAIT
+#    define SA_NOCLDWAIT 0x00000002
+#endif
+#ifndef SA_SIGINFO
+#    define SA_SIGINFO 0x00000004
+#endif
+#ifndef SA_ONSTACK
+#    define SA_ONSTACK 0x08000000
+#endif
+#ifndef SA_RESTART
+#    define SA_RESTART 0x10000000
+#endif
+#ifndef SA_NODEFER
+#    define SA_NODEFER 0x40000000
+#endif
+#ifndef SA_RESETHAND
+#    define SA_RESETHAND 0x80000000
+#endif
+#ifndef SA_RESTORER
+#    define SA_RESTORER 0x04000000
+#endif
+#ifndef SIG_BLOCK
+#    define SIG_BLOCK 0
+#    define SIG_UNBLOCK 1
+#    define SIG_SETMASK 2
+#endif
+#ifndef SI_USER
+#    define SI_USER 0
+#    define SI_KERNEL 0x80
+#    define SI_QUEUE -1
+#    define SI_TIMER -2
+#    define SI_MESGQ -3
+#    define SI_ASYNCIO -4
+#    define SI_SIGIO -5
+#    define SI_TKILL -6
+#endif
+struct sigaction {
+    union {
+        void (*sa_handler)(int);
+        void (*sa_sigaction)(int, siginfo_t *, void *);
+    } _sa_u;
+    sigset_t sa_mask;
+    int      sa_flags;
+    void   (*sa_restorer)(void);
+};
+#define sa_handler   _sa_u.sa_handler
+#define sa_sigaction _sa_u.sa_sigaction
+typedef void (*sighandler_t)(int);
+#ifdef __cplusplus
+extern "C" {
+#endif
+OPAL_WIN32_DECLSPEC int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
+OPAL_WIN32_DECLSPEC int sigemptyset(sigset_t *set);
+OPAL_WIN32_DECLSPEC int sigfillset(sigset_t *set);
+OPAL_WIN32_DECLSPEC int sigaddset(sigset_t *set, int signo);
+OPAL_WIN32_DECLSPEC int sigdelset(sigset_t *set, int signo);
+OPAL_WIN32_DECLSPEC int sigismember(const sigset_t *set, int signo);
+OPAL_WIN32_DECLSPEC int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+OPAL_WIN32_DECLSPEC int sigpending(sigset_t *set);
+OPAL_WIN32_DECLSPEC int sigsuspend(const sigset_t *mask);
+OPAL_WIN32_DECLSPEC int sigwait(const sigset_t *set, int *sig);
+OPAL_WIN32_DECLSPEC int sigqueue(pid_t pid, int sig, const union sigval value);
+OPAL_WIN32_DECLSPEC int siginterrupt(int sig, int flag);
+OPAL_WIN32_DECLSPEC int sighold(int sig);
+OPAL_WIN32_DECLSPEC int sigrelse(int sig);
+OPAL_WIN32_DECLSPEC int sigignore(int sig);
+OPAL_WIN32_DECLSPEC int sigpause(int sig, int flag);
+char *strsignal(int sig);
+OPAL_WIN32_DECLSPEC void psignal(int sig, const char *msg);
+OPAL_WIN32_DECLSPEC int opal_win32_kill(pid_t pid, int sig);
+#define kill opal_win32_kill
+#ifdef __cplusplus
+}
+#endif
+#endif /* OPAL_WIN32_FWD_SIGNAL_H */

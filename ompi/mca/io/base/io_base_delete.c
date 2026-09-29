@@ -80,7 +80,7 @@ extern opal_mutex_t ompi_mpi_ompio_bootstrap_mutex;
 /*
  * Stuff for the OBJ interface
  */
-static OBJ_CLASS_INSTANCE(avail_io_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(avail_io_t, opal_list_item_t, NULL, NULL);
 
 
 /*

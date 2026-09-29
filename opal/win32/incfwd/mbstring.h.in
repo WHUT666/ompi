@@ -1,0 +1,5 @@
+#ifndef OPAL_WIN32_FWD_MBSTRING_H
+#define OPAL_WIN32_FWD_MBSTRING_H
+#include "@OPAL_CRT_UCRT@/mbstring.h"
+#include "opal_win32_common.h"
+#endif

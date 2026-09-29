@@ -105,7 +105,7 @@ OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_info_entry_t);
  *   an info object is no longer being used, it should be freed with
  *   \c opal_info_free.
  */
-int opal_info_dup_public(opal_info_t *info, opal_info_t **newinfo);
+OPAL_DECLSPEC int opal_info_dup_public(opal_info_t *info, opal_info_t **newinfo);
 
 /**
  *   opal_info_dup - Duplicate all entries of an 'MPI_Info' object
@@ -121,7 +121,7 @@ int opal_info_dup_public(opal_info_t *info, opal_info_t **newinfo);
  *   an info object is no longer being used, it should be freed with
  *   \c opal_info_free.
  */
-int opal_info_dup(opal_info_t *info, opal_info_t **newinfo);
+OPAL_DECLSPEC int opal_info_dup(opal_info_t *info, opal_info_t **newinfo);
 
 /**
  * Set a new key,value pair on info and mark it as referenced.
@@ -189,7 +189,7 @@ OPAL_DECLSPEC int opal_info_set_value_enum(opal_info_t *info, const char *key, i
  *   'MPI_INFO_NULL'.  Free the info handle and all of its keys and
  *   values.
  */
-int opal_info_free(opal_info_t **info);
+OPAL_DECLSPEC int opal_info_free(opal_info_t **info);
 
 /**
  *   Get a (key, value) pair from an 'MPI_Info' object and assign it
@@ -268,7 +268,7 @@ OPAL_DECLSPEC int opal_info_get(opal_info_t *info, const char *key, opal_cstring
  * @retval OPAL_SUCCESS
  * @retval OPAL_ERR_NOT_FOUND
  */
-int opal_info_delete(opal_info_t *info, const char *key);
+OPAL_DECLSPEC int opal_info_delete(opal_info_t *info, const char *key);
 
 /**
  *   @param info - opal_info_t pointer object (handle)
@@ -302,7 +302,7 @@ OPAL_DECLSPEC int opal_info_get_valuelen(opal_info_t *info, const char *key, int
  *   \c key string by calling \c OBJ_RELEASE on it once the object is not needed
  *   any more.
  */
-int opal_info_get_nthkey(opal_info_t *info, int n, opal_cstring_t **key);
+OPAL_DECLSPEC int opal_info_get_nthkey(opal_info_t *info, int n, opal_cstring_t **key);
 
 /**
  * Get the number of keys defined on on an MPI_Info object

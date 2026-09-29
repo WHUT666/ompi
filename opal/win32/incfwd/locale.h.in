@@ -1,0 +1,5 @@
+#ifndef OPAL_WIN32_FWD_LOCALE_H
+#define OPAL_WIN32_FWD_LOCALE_H
+#include "@OPAL_CRT_UCRT@/locale.h"
+#include "opal_win32_common.h"
+#endif

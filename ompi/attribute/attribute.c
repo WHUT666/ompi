@@ -455,7 +455,7 @@ static int compare_attr_sequence(const void *attr1, const void *attr2);
 /*
  * attribute_subsys_t class
  */
-static OBJ_CLASS_INSTANCE(attr_subsys_t,
+OBJ_CLASS_INSTANCE_STATIC(attr_subsys_t,
                           opal_object_t,
                           attr_subsys_construct,
                           attr_subsys_destruct);
@@ -463,7 +463,7 @@ static OBJ_CLASS_INSTANCE(attr_subsys_t,
 /*
  * attribute_key_value_t class
  */
-static OBJ_CLASS_INSTANCE(attribute_key_value_t,
+OBJ_CLASS_INSTANCE_STATIC(attribute_key_value_t,
                           opal_object_t,
                           attribute_key_value_construct,
                           NULL);
@@ -472,7 +472,7 @@ static OBJ_CLASS_INSTANCE(attribute_key_value_t,
 /*
  * ompi_attribute_entry_t classes
  */
-static OBJ_CLASS_INSTANCE(ompi_attribute_keyval_t,
+OBJ_CLASS_INSTANCE_STATIC(ompi_attribute_keyval_t,
                           opal_object_t,
                           ompi_attribute_keyval_construct,
                           ompi_attribute_keyval_destruct);

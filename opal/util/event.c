@@ -266,7 +266,13 @@ void opal_event_use_threads(void)
 
     if (!called) {
         called = true;
+#if defined(_WIN32)
+        /* Windows libevent builds evthread_win32.c (not the pthread
+         * backend); the win32 locking vtable is the native equivalent */
+        evthread_use_windows_threads();
+#else
         evthread_use_pthreads();
+#endif
     }
 }
 

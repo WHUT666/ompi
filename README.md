@@ -1,4 +1,38 @@
-# Open MPI
+# Open MPI — native Windows port
+
+> **This fork adds a native Windows port of Open MPI** (branch
+> [`win32-msvc-port`](https://github.com/WHUT666/ompi/tree/win32-msvc-port)):
+> real Open MPI built with **MSVC / Visual Studio 2022 + CMake** —
+> shared DLLs, C bindings, TCP communication, and the PMIx/PRRTE
+> launcher stack running natively (no Cygwin/MSYS2 runtime, no
+> POSIX-emulation launcher).
+>
+> The matching submodule changes live on the same branch in
+> [`WHUT666/openpmix`](https://github.com/WHUT666/openpmix/tree/win32-msvc-port)
+> and
+> [`WHUT666/prrte`](https://github.com/WHUT666/prrte/tree/win32-msvc-port);
+> this branch's `.gitmodules` already points at those forks, so
+> `git clone --recursive` gets the whole working tree.
+>
+> **What works today** (validated on Windows 11, VS2022, Release):
+> - `mpicc` compiles MPI C programs against the native DLLs
+> - `mpirun` / `mpiexec` / `prterun` launch local jobs:
+>   `mpirun -np 4 ring_c` passes a token around real MPI ranks over TCP
+> - Persistent DVM: `prte --daemonize --report-uri uri.txt`,
+>   `prun --dvm-uri file:uri.txt -n 2 hello_c`, `pterm --dvm-uri ...`
+> - PMIx client/server over `tcp4`, PRRTE OOB/RML, IOF stdout/stderr
+>   forwarding, child reaping via a polling `waitpid` registry
+>
+> **Not yet validated:** multi-node launches (the `plm/ssh` path builds
+> but needs a second Windows host), Fortran/C++ bindings, and most
+> `make check` coverage.
+>
+> **Layout:** Windows portability lives in `opal/win32/` (a POSIX shim
+> over Winsock/CRT/CreateProcess) and generated forwarding headers; the
+> CMake build system is in `cmake/` + the `CMakeLists.txt` files.
+> Higher layers keep only small `#ifdef _WIN32` blocks.
+
+## Upstream README
 
 [The Open MPI Project](https://www.open-mpi.org/) is an open source
 implementation of the [Message Passing Interface (MPI)

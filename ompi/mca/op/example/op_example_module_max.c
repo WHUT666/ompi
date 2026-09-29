@@ -111,7 +111,7 @@ static void module_max_destructor(module_max_t *m)
  * - function pointer for the constructor (or NULL)
  * - function pointer for the destructor (or NULL)
  */
-static OBJ_CLASS_INSTANCE(module_max_t,
+OBJ_CLASS_INSTANCE_STATIC(module_max_t,
                           ompi_op_base_module_t,
                           module_max_constructor,
                           module_max_destructor);

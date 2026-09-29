@@ -99,7 +99,7 @@ typedef struct opal_proc_t {
     /** Base convertor for the proc described by this process */
     struct opal_convertor_t *proc_convertor;
 } opal_proc_t;
-OBJ_CLASS_DECLARATION(opal_proc_t);
+OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_proc_t);
 
 typedef struct {
     opal_list_item_t super;

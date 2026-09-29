@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+#
+# Copyright (c) 2026      Amazon.com, Inc. or its affiliates.
+#                         All Rights reserved.
+# $COPYRIGHT$
+#
+# Additional copyrights may follow
+#
+# $HEADER$
+#
+# Harvest C source file lists from Automake Makefile.am files so the
+# CMake build does not have to duplicate the lists by hand.
+#
+# Usage:
+#   harvest_sources.py --root <srcdir> \
+#                      --var <cmake var name> \
+#                      --include <Makefile.am>[:<subdir prefix>] ... \
+#                      --exclude <regex> ... \
+#                      --out <file.cmake>
+#
+# For each Makefile.am, every assignment of the form
+#   <name>_SOURCES = a.c b.c ...
+#   <name>_SOURCES += a.c b.c ...
+#   libfoo_la_SOURCES = ...
+# is collected; the listed .c files are resolved relative to the
+# directory containing the Makefile.am (plus an optional subdirectory
+# prefix for the merged-in includes such as class/Makefile.am that add
+# "class/" prefixes themselves).
+#
+# The result is emitted as
+#   set(<var>
+#       <abs path or srcdir-relative path> ...
+#   )
+# into --out.
+
+import argparse
+import os
+import re
+import sys
+
+
+def read_sources(makefile_am, prefix, cond_state, assign_pat=None):
+    """Return the list of source files named by *_SOURCES assignments."""
+    srcs = []
+    # Matches: NAME_SOURCES += foo.c ...  or  libNAME_la_SOURCES = foo.c
+    assign_re = re.compile(
+        r'^\s*(?:[\w]+\.)?([\w]+_(?:la_)?SOURCES)\s*(?:\+)?=\s*(.*)$')
+    cond_re = re.compile(r'^\s*if\s+(\w+)\s*$')
+    condelse_re = re.compile(r'^\s*else\b')
+    condend_re = re.compile(r'^\s*endif\b')
+
+    with open(makefile_am, 'r', encoding='utf-8', errors='replace') as f:
+        lines = f.readlines()
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].rstrip('\n')
+        i += 1
+        # strip comments
+        hashpos = line.find('#')
+        if hashpos >= 0:
+            line = line[:hashpos]
+        # join continuation lines
+        while line.rstrip().endswith('\\') and i < len(lines):
+            line = line.rstrip()[:-1] + ' ' + lines[i].rstrip('\n')
+            i += 1
+            hashpos = line.find('#')
+            if hashpos >= 0:
+                line = line[:hashpos]
+        line = line.strip()
+        if not line:
+            continue
+
+        m = cond_re.match(line)
+        if m:
+            cond_state.append(m.group(1))
+            continue
+        if condelse_re.match(line):
+            # treat else as still-in-conditional (we want everything)
+            continue
+        if condend_re.match(line):
+            if cond_state:
+                cond_state.pop()
+            continue
+
+        m = assign_re.match(line)
+        if not m:
+            continue
+        if assign_pat is not None and not assign_pat.search(m.group(1)):
+            continue
+        rhs = m.group(2)
+        for tok in rhs.split():
+            if tok.startswith('$(') or tok.startswith('@'):
+                continue  # variable refs are not resolved here
+            if not tok.endswith(('.c', '.cc', '.cpp')):
+                continue
+            path = os.path.normpath(os.path.join(prefix, tok))
+            srcs.append(path.replace('\\', '/'))
+    return srcs
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--root', required=True)
+    ap.add_argument('--var', required=True)
+    ap.add_argument('--include', action='append', default=[],
+                    help='Makefile.am path (relative to --root), optionally '
+                         'followed by :subdir')
+    ap.add_argument('--exclude', action='append', default=[],
+                    help='regex; matching source paths are dropped')
+    ap.add_argument('--assign-pattern', default=None,
+                    help='regex; only *_SOURCES names matching are collected')
+    ap.add_argument('--out', required=True)
+    args = ap.parse_args()
+
+    excludes = [re.compile(x) for x in args.exclude]
+    assign_pat = (re.compile(args.assign_pattern)
+                  if args.assign_pattern else None)
+    seen = set()
+    sources = []
+    for spec in args.include:
+        if ':' in spec:
+            am, sub = spec.split(':', 1)
+        else:
+            am, sub = spec, ''
+        am_path = os.path.join(args.root, am)
+        if not os.path.exists(am_path):
+            print('harvest_sources: missing %s' % am_path, file=sys.stderr)
+            sys.exit(1)
+        base = sub if sub else os.path.dirname(am)
+        for s in read_sources(am_path, base, [], assign_pat):
+            rel = os.path.relpath(os.path.join(args.root, s), args.root)
+            rel = rel.replace('\\', '/')
+            if any(x.search(rel) for x in excludes):
+                continue
+            if rel not in seen:
+                seen.add(rel)
+                sources.append(rel)
+
+    with open(args.out, 'w', encoding='utf-8') as f:
+        f.write('# generated by cmake/harvest_sources.py -- do not edit\n')
+        f.write('set(%s\n' % args.var)
+        for s in sorted(sources):
+            f.write('    "${OMPI_SOURCE_DIR}/%s"\n' % s)
+        f.write(')\n')
+
+
+if __name__ == '__main__':
+    main()

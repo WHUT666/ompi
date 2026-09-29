@@ -653,3 +653,6 @@ ompi/mpi/fortran/use-mpi-ignore-tkr/*_generated.F90
 ompi/mpi/fortran/use-mpi-ignore-tkr/base/*_generated.c
 
 .vscode/
+
+# Windows CMake build tree
+build/

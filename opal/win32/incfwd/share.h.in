@@ -1,0 +1,5 @@
+#ifndef OPAL_WIN32_FWD_SHARE_H
+#define OPAL_WIN32_FWD_SHARE_H
+#include "@OPAL_CRT_UCRT@/share.h"
+#include "opal_win32_common.h"
+#endif

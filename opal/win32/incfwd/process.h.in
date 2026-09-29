@@ -1,0 +1,5 @@
+#ifndef OPAL_WIN32_FWD_PROCESS_H
+#define OPAL_WIN32_FWD_PROCESS_H
+#include "@OPAL_CRT_UCRT@/process.h"
+#include "opal_win32_common.h"
+#endif

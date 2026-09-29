@@ -17,6 +17,11 @@
 
 #    include "opal_stdint.h"
 
+/* ssize_t lives in <sys/types.h>; on Windows the opal/win32 forwarder
+ * supplies it.  Include it explicitly so this header is self-contained
+ * when included before opal_config.h's other typedefs are visible. */
+#    include <sys/types.h>
+
 #if OPAL_USE_C11_ATOMICS == 0
 
 typedef volatile int opal_atomic_int_t;

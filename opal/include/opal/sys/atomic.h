@@ -422,7 +422,9 @@ static inline void opal_atomic_sc_ptr(opal_atomic_intptr_t *addr, intptr_t newva
 #elif OPAL_USE_GCC_BUILTIN_ATOMICS == 1
 #    include "opal/sys/gcc_builtin/atomic.h"
 #elif OPAL_USE_ASM_ATOMICS == 1
-#    if defined(PLATFORM_ARCH_X86_64)
+#    if defined(_MSC_VER)
+#        include "opal/sys/win32/atomic.h"
+#    elif defined(PLATFORM_ARCH_X86_64)
 #        include "opal/sys/x86_64/atomic.h"
 #    elif defined(PLATFORM_ARCH_AARCH64)
 #        include "opal/sys/arm64/atomic.h"

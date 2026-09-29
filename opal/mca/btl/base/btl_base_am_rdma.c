@@ -61,7 +61,7 @@ static void am_rdma_component_fini(am_rdma_component_t *component)
     OBJ_DESTRUCT(&component->queued_initiator_descriptors);
 }
 
-static OBJ_CLASS_INSTANCE(am_rdma_component_t, opal_object_t,
+OBJ_CLASS_INSTANCE_STATIC(am_rdma_component_t, opal_object_t,
                           am_rdma_component_init, am_rdma_component_fini);
 
 
@@ -140,7 +140,7 @@ static void am_rdma_context_init(am_rdma_context_t *context)
     context->descriptor = NULL;
 }
 
-static OBJ_CLASS_INSTANCE(am_rdma_context_t, opal_object_t,
+OBJ_CLASS_INSTANCE_STATIC(am_rdma_context_t, opal_object_t,
                           am_rdma_context_init, NULL);
 
 
@@ -155,7 +155,7 @@ struct am_rdma_queued_descriptor_t {
 };
 typedef struct am_rdma_queued_descriptor_t am_rdma_queued_descriptor_t;
 
-static OBJ_CLASS_INSTANCE(am_rdma_queued_descriptor_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(am_rdma_queued_descriptor_t, opal_list_item_t, NULL, NULL);
 
 
 /**
@@ -231,7 +231,7 @@ struct am_rdma_operation_t {
 };
 typedef struct am_rdma_operation_t am_rdma_operation_t;
 
-static OBJ_CLASS_INSTANCE(am_rdma_operation_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(am_rdma_operation_t, opal_list_item_t, NULL, NULL);
 
 
 static inline bool am_rdma_is_atomic(am_rdma_type_t type)

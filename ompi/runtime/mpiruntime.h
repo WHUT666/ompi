@@ -239,7 +239,7 @@ void ompi_mpi_thread_level(int requested, int *provided);
  *
  * It is permissible to pass in (0, NULL) for (argc, argv).
  */
-int ompi_mpi_init(int argc, char **argv, int requested, int *provided,
+OMPI_DECLSPEC int ompi_mpi_init(int argc, char **argv, int requested, int *provided,
                   bool reinit_ok);
 
 /**
@@ -251,7 +251,7 @@ int ompi_mpi_init(int argc, char **argv, int requested, int *provided,
  * Should be called after all MPI functionality is complete (usually
  * during MPI_FINALIZE).
  */
-int ompi_mpi_finalize(void);
+OMPI_DECLSPEC int ompi_mpi_finalize(void);
 
 /**
  * Abort the processes of comm

@@ -1,0 +1,106 @@
+#ifndef OPAL_WIN32_FWD_SYS_TYPES_H
+#define OPAL_WIN32_FWD_SYS_TYPES_H
+#include "@OPAL_CRT_UCRT@/sys/types.h"
+#include <stdint.h>
+#include <BaseTsd.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* POSIX types missing from the CRT sys/types.h.  All are guarded so
+ * repeat/dual inclusion paths are safe. */
+#ifndef _SSIZE_T_DEFINED
+#    define _SSIZE_T_DEFINED
+typedef SSIZE_T ssize_t;
+#endif
+#ifndef _PID_T_DEFINED
+#    define _PID_T_DEFINED
+typedef int pid_t;
+#endif
+typedef unsigned int uid_t;
+typedef unsigned int gid_t;
+#ifndef _MODE_T_DEFINED
+#    define _MODE_T_DEFINED
+typedef unsigned short mode_t;
+#endif
+#ifndef _NLINK_T_DEFINED
+#    define _NLINK_T_DEFINED
+typedef unsigned int nlink_t;
+#endif
+#ifndef _BLKSIZE_T_DEFINED
+#    define _BLKSIZE_T_DEFINED
+typedef long blksize_t;
+#endif
+#ifndef _BLKCNT_T_DEFINED
+#    define _BLKCNT_T_DEFINED
+typedef long long blkcnt_t;
+#endif
+#ifndef _FSBLKCNT_T_DEFINED
+#    define _FSBLKCNT_T_DEFINED
+typedef unsigned long long fsblkcnt_t;
+typedef unsigned long long fsfilcnt_t;
+#endif
+#ifndef _SUSECONDS_T_DEFINED
+#    define _SUSECONDS_T_DEFINED
+typedef long suseconds_t;
+#endif
+#ifndef _USECONDS_T_DEFINED
+#    define _USECONDS_T_DEFINED
+typedef unsigned int useconds_t;
+#endif
+typedef long key_t;
+typedef char *caddr_t;
+#ifndef _ID_T_DEFINED
+#    define _ID_T_DEFINED
+typedef int id_t;
+#endif
+#ifndef _CLOCKID_T_DEFINED
+#    define _CLOCKID_T_DEFINED
+typedef int clockid_t;
+#endif
+#ifndef _TIMER_T_DEFINED
+#    define _TIMER_T_DEFINED
+typedef void *timer_t;
+#endif
+/* signal types (POSIX keeps these in signal.h; we centralize so
+ * sys/select.h and spawn.h can see them without cycles) */
+#ifndef _SIGSET_T_DEFINED
+#    define _SIGSET_T_DEFINED
+typedef unsigned long sigset_t;
+#endif
+#ifndef _SIGVAL_DEFINED
+#    define _SIGVAL_DEFINED
+union sigval {
+    int   sival_int;
+    void *sival_ptr;
+};
+#endif
+#ifndef _SIGINFO_T_DEFINED
+#    define _SIGINFO_T_DEFINED
+typedef struct {
+    int      si_signo;
+    int      si_code;
+    pid_t    si_pid;
+    uid_t    si_uid;
+    void    *si_addr;
+    int      si_status;
+    union sigval si_value;
+} siginfo_t;
+#endif
+/* BSD-style unsigned aliases */
+#ifndef _BSD_U_TYPES_DEFINED
+#    define _BSD_U_TYPES_DEFINED
+typedef unsigned char  u_char;
+typedef unsigned short u_short;
+typedef unsigned int   u_int;
+typedef unsigned long  u_long;
+typedef unsigned char  u_int8_t;
+typedef unsigned short u_int16_t;
+typedef unsigned int   u_int32_t;
+typedef unsigned long long u_int64_t;
+typedef unsigned int   uint;
+typedef unsigned short ushort;
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif /* OPAL_WIN32_FWD_SYS_TYPES_H */

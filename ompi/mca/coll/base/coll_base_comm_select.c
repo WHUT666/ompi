@@ -337,6 +337,7 @@ int mca_coll_base_comm_select(ompi_communicator_t * comm)
         /* TODO -- Once the topology flags are set before coll_select then
          * check if neighborhood collectives have been set. */
 
+        fprintf(stderr, "[coll-select] missing function: %s\n", which_func);
         opal_show_help("help-mca-coll-base.txt",
                        "comm-select:no-function-available", true, which_func);
 

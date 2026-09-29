@@ -34,6 +34,19 @@
 
 static const char *path_sep = OPAL_PATH_SEP;
 
+#ifdef _WIN32
+/* Return true for "X:" drive-qualified elements -- they must not be
+ * preceded by a separator and they make a path absolute. */
+static int is_drive_qualified(const char *element)
+{
+    return element[0] && element[1] == ':'
+           && ((element[0] >= 'a' && element[0] <= 'z')
+               || (element[0] >= 'A' && element[0] <= 'Z'));
+}
+#else
+#    define is_drive_qualified(e) (0)
+#endif
+
 char *opal_os_path(int relative, ...)
 {
     va_list ap;
@@ -50,7 +63,7 @@ char *opal_os_path(int relative, ...)
     while (NULL != (element = va_arg(ap, char *))) {
         num_elements++;
         total_length = total_length + strlen(element);
-        if (path_sep[0] != element[0]) {
+        if (path_sep[0] != element[0] && !(1 == num_elements && is_drive_qualified(element))) {
             total_length++;
         }
     }
@@ -88,7 +101,7 @@ char *opal_os_path(int relative, ...)
 
     va_start(ap, relative);
     if (NULL != (element = va_arg(ap, char *))) {
-        if (path_sep[0] != element[0]) {
+        if (path_sep[0] != element[0] && !is_drive_qualified(element)) {
             strncat(path, path_sep, total_length - strlen(path) - 1);
         }
         strncat(path, element, total_length - strlen(path) - 1);

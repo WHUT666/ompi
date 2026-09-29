@@ -62,7 +62,7 @@ typedef const char *(opal_key_interest_callback_t)(opal_infosubscriber_t *, cons
  *
  *   Notifies subscribers of info's that have gone away and new info settings
  */
-int opal_infosubscribe_change_info(opal_infosubscriber_t *, opal_info_t *);
+OPAL_DECLSPEC int opal_infosubscribe_change_info(opal_infosubscriber_t *, opal_info_t *);
 
 /**
  *   opal_infosubscribe_subscribe - Request to be updated about info changes to a Comm/Win/File Info
@@ -79,7 +79,7 @@ int opal_infosubscribe_change_info(opal_infosubscriber_t *, opal_info_t *);
  *   Does not try to optimize settings that are the same between old and new
  *   info's.
  */
-int opal_infosubscribe_subscribe(opal_infosubscriber_t *, const char *, const char *,
+OPAL_DECLSPEC int opal_infosubscribe_subscribe(opal_infosubscriber_t *, const char *, const char *,
                                  opal_key_interest_callback_t);
 
 #endif /* OMPI_INFO_H */

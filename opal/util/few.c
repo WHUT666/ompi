@@ -29,6 +29,10 @@
 #    include <unistd.h>
 #endif
 
+#ifdef _WIN32
+#    include <spawn.h>
+#endif
+
 #include "opal/constants.h"
 #include "opal/util/few.h"
 
@@ -73,6 +77,27 @@ int opal_few(char *argv[], int *status)
     }
 
     /* Return the status to the caller */
+
+    return OPAL_SUCCESS;
+#elif defined(_WIN32)
+    /* No fork() on Windows: posix_spawnp (CreateProcess) + waitpid via the
+     * opal/win32 compat layer's child registry. */
+    pid_t pid, ret;
+    int rc = posix_spawnp(&pid, argv[0], NULL, NULL, argv, environ);
+    if (0 != rc) {
+        errno = rc;
+        return OPAL_ERR_IN_ERRNO;
+    }
+
+    do {
+        ret = waitpid(pid, status, 0);
+        if (ret < 0) {
+            if (EINTR == errno) {
+                continue;
+            }
+            return OPAL_ERR_IN_ERRNO;
+        }
+    } while (pid != ret);
 
     return OPAL_SUCCESS;
 #else

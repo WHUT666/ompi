@@ -726,6 +726,7 @@ int ompi_mpi_init(int argc, char **argv, int requested, int *provided,
         /* Only print a message if one was not already printed */
         if (NULL != error && OMPI_ERR_SILENT != ret) {
             const char *err_msg = opal_strerror(ret);
+            fprintf(stderr, "[ompi-init-error] %s: %s (%d)\n", error, err_msg, ret);
             opal_show_help("help-mpi-runtime.txt",
                            "mpi_init:startup:internal-failure", true,
                            "MPI_INIT", "MPI_INIT", error, err_msg, ret);

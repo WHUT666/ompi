@@ -1,0 +1,297 @@
+#ifndef OPAL_WIN32_FWD_ERRNO_H
+#define OPAL_WIN32_FWD_ERRNO_H
+#include "@OPAL_CRT_UCRT@/errno.h"
+/* POSIX error numbers missing from the UCRT errno.h.  Values follow
+ * the BSD numbering the UCRT itself uses for its socket block. */
+#ifndef EPERM
+#    define EPERM 1
+#endif
+#ifndef ENOENT
+#    define ENOENT 2
+#endif
+#ifndef ESRCH
+#    define ESRCH 3
+#endif
+#ifndef EINTR
+#    define EINTR 4
+#endif
+#ifndef EIO
+#    define EIO 5
+#endif
+#ifndef ENXIO
+#    define ENXIO 6
+#endif
+#ifndef E2BIG
+#    define E2BIG 7
+#endif
+#ifndef ENOEXEC
+#    define ENOEXEC 8
+#endif
+#ifndef EBADF
+#    define EBADF 9
+#endif
+#ifndef ECHILD
+#    define ECHILD 10
+#endif
+#ifndef EAGAIN
+#    define EAGAIN 11
+#endif
+#ifndef ENOMEM
+#    define ENOMEM 12
+#endif
+#ifndef EACCES
+#    define EACCES 13
+#endif
+#ifndef EFAULT
+#    define EFAULT 14
+#endif
+#ifndef ENOTBLK
+#    define ENOTBLK 15
+#endif
+#ifndef EBUSY
+#    define EBUSY 16
+#endif
+#ifndef EEXIST
+#    define EEXIST 17
+#endif
+#ifndef EXDEV
+#    define EXDEV 18
+#endif
+#ifndef ENODEV
+#    define ENODEV 19
+#endif
+#ifndef ENOTDIR
+#    define ENOTDIR 20
+#endif
+#ifndef EISDIR
+#    define EISDIR 21
+#endif
+#ifndef EINVAL
+#    define EINVAL 22
+#endif
+#ifndef ENFILE
+#    define ENFILE 23
+#endif
+#ifndef EMFILE
+#    define EMFILE 24
+#endif
+#ifndef ENOTTY
+#    define ENOTTY 25
+#endif
+#ifndef ETXTBSY
+#    define ETXTBSY 26
+#endif
+#ifndef EFBIG
+#    define EFBIG 27
+#endif
+#ifndef ENOSPC
+#    define ENOSPC 28
+#endif
+#ifndef ESPIPE
+#    define ESPIPE 29
+#endif
+#ifndef EROFS
+#    define EROFS 30
+#endif
+#ifndef EMLINK
+#    define EMLINK 31
+#endif
+#ifndef EPIPE
+#    define EPIPE 32
+#endif
+#ifndef EDOM
+#    define EDOM 33
+#endif
+#ifndef ERANGE
+#    define ERANGE 34
+#endif
+#ifndef EDEADLK
+#    define EDEADLK 36
+#endif
+#ifndef EDEADLOCK
+#    define EDEADLOCK EDEADLK
+#endif
+#ifndef ENAMETOOLONG
+#    define ENAMETOOLONG 38
+#endif
+#ifndef ENOLCK
+#    define ENOLCK 39
+#endif
+#ifndef ENOSYS
+#    define ENOSYS 40
+#endif
+#ifndef ENOTEMPTY
+#    define ENOTEMPTY 41
+#endif
+#ifndef EILSEQ
+#    define EILSEQ 42
+#endif
+#ifndef EWOULDBLOCK
+#    define EWOULDBLOCK 140
+#endif
+#ifndef EINPROGRESS
+#    define EINPROGRESS 112
+#endif
+#ifndef EALREADY
+#    define EALREADY 114
+#endif
+#ifndef ENOTSOCK
+#    define ENOTSOCK 128
+#endif
+#ifndef EDESTADDRREQ
+#    define EDESTADDRREQ 129
+#endif
+#ifndef EMSGSIZE
+#    define EMSGSIZE 130
+#endif
+#ifndef EPROTOTYPE
+#    define EPROTOTYPE 131
+#endif
+#ifndef ENOPROTOOPT
+#    define ENOPROTOOPT 132
+#endif
+#ifndef EPROTONOSUPPORT
+#    define EPROTONOSUPPORT 133
+#endif
+#ifndef ESOCKTNOSUPPORT
+#    define ESOCKTNOSUPPORT 134
+#endif
+#ifndef EOPNOTSUPP
+#    define EOPNOTSUPP 135
+#endif
+#ifndef ENOTSUP
+#    define ENOTSUP EOPNOTSUPP
+#endif
+#ifndef EPFNOSUPPORT
+#    define EPFNOSUPPORT 136
+#endif
+#ifndef EAFNOSUPPORT
+#    define EAFNOSUPPORT 137
+#endif
+#ifndef EADDRINUSE
+#    define EADDRINUSE 138
+#endif
+#ifndef EADDRNOTAVAIL
+#    define EADDRNOTAVAIL 139
+#endif
+#ifndef ENETDOWN
+#    define ENETDOWN 141
+#endif
+#ifndef ENETUNREACH
+#    define ENETUNREACH 142
+#endif
+#ifndef ENETRESET
+#    define ENETRESET 143
+#endif
+#ifndef ECONNABORTED
+#    define ECONNABORTED 144
+#endif
+#ifndef ECONNRESET
+#    define ECONNRESET 145
+#endif
+#ifndef ENOBUFS
+#    define ENOBUFS 146
+#endif
+#ifndef EISCONN
+#    define EISCONN 147
+#endif
+#ifndef ENOTCONN
+#    define ENOTCONN 148
+#endif
+#ifndef ESHUTDOWN
+#    define ESHUTDOWN 149
+#endif
+#ifndef ETOOMANYREFS
+#    define ETOOMANYREFS 150
+#endif
+#ifndef ETIMEDOUT
+#    define ETIMEDOUT 151
+#endif
+#ifndef ECONNREFUSED
+#    define ECONNREFUSED 152
+#endif
+#ifndef ELOOP
+#    define ELOOP 153
+#endif
+#ifndef EHOSTDOWN
+#    define EHOSTDOWN 154
+#endif
+#ifndef EHOSTUNREACH
+#    define EHOSTUNREACH 155
+#endif
+#ifndef EPROCLIM
+#    define EPROCLIM 156
+#endif
+#ifndef EUSERS
+#    define EUSERS 157
+#endif
+#ifndef EDQUOT
+#    define EDQUOT 158
+#endif
+#ifndef ESTALE
+#    define ESTALE 159
+#endif
+#ifndef EREMOTE
+#    define EREMOTE 160
+#endif
+#ifndef ECANCELED
+#    define ECANCELED 161
+#endif
+#ifndef ENOMSG
+#    define ENOMSG 162
+#endif
+#ifndef EIDRM
+#    define EIDRM 163
+#endif
+#ifndef ENOLINK
+#    define ENOLINK 164
+#endif
+#ifndef EPROTO
+#    define EPROTO 165
+#endif
+#ifndef EMULTIHOP
+#    define EMULTIHOP 166
+#endif
+#ifndef EBADMSG
+#    define EBADMSG 167
+#endif
+#ifndef EOVERFLOW
+#    define EOVERFLOW 168
+#endif
+#ifndef ENOTUNIQ
+#    define ENOTUNIQ 169
+#endif
+#ifndef EBADFD
+#    define EBADFD 170
+#endif
+#ifndef EFTYPE
+#    define EFTYPE 171
+#endif
+#ifndef ECHRNG
+#    define ECHRNG 174
+#endif
+#ifndef ELNRANGE
+#    define ELNRANGE 175
+#endif
+#ifndef ENODATA
+#    define ENODATA 176
+#endif
+#ifndef ENOSR
+#    define ENOSR 177
+#endif
+#ifndef ENOSTR
+#    define ENOSTR 178
+#endif
+#ifndef ETIME
+#    define ETIME 179
+#endif
+#ifndef EOWNERDEAD
+#    define EOWNERDEAD 180
+#endif
+#ifndef ENOTRECOVERABLE
+#    define ENOTRECOVERABLE 181
+#endif
+#ifndef ENOSTR
+#    define ENOSTR 178
+#endif
+#endif /* OPAL_WIN32_FWD_ERRNO_H */

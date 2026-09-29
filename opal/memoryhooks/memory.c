@@ -47,7 +47,7 @@ struct callback_list_item_t {
     void *cbdata;
 };
 typedef struct callback_list_item_t callback_list_item_t;
-static OBJ_CLASS_INSTANCE(callback_list_item_t, opal_list_item_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(callback_list_item_t, opal_list_item_t, NULL, NULL);
 
 /*
  * local data

@@ -250,11 +250,11 @@ static inline void opal_mutex_atomic_unlock(opal_mutex_t *mutex)
 
 typedef opal_thread_internal_cond_t opal_cond_t;
 #define OPAL_CONDITION_STATIC_INIT OPAL_THREAD_INTERNAL_COND_INITIALIZER
-int opal_cond_init(opal_cond_t *cond);
-int opal_cond_wait(opal_cond_t *cond, opal_mutex_t *lock);
-int opal_cond_broadcast(opal_cond_t *cond);
-int opal_cond_signal(opal_cond_t *cond);
-int opal_cond_destroy(opal_cond_t *cond);
+OPAL_DECLSPEC int opal_cond_init(opal_cond_t *cond);
+OPAL_DECLSPEC int opal_cond_wait(opal_cond_t *cond, opal_mutex_t *lock);
+OPAL_DECLSPEC int opal_cond_broadcast(opal_cond_t *cond);
+OPAL_DECLSPEC int opal_cond_signal(opal_cond_t *cond);
+OPAL_DECLSPEC int opal_cond_destroy(opal_cond_t *cond);
 
 END_C_DECLS
 

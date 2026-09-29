@@ -158,8 +158,12 @@ static int coll_tuned_read_message_size_rule(   ompi_coll_msg_rule_t *msg_p,
     const char *TOPO_FANINOUT_FIELD = "faninout";
     const char *SEGSIZE_FIELD = "seg_size";
     const char *MAX_REQUESTS_FIELD = "reqs";
+    /* OPTIONAL/REQUIRED are annotation macros in some Windows system
+     * headers -- drop them so the local consts win. */
+#undef OPTIONAL
+#undef REQUIRED
     const int OPTIONAL = 1;
-    // const int REQUIRED = 0;
+    const int REQUIRED = 0;
     int64_t int_val;
 
 

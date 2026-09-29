@@ -110,7 +110,7 @@ typedef struct grequestx_class grequestx_class;
 
 static int next_class = 0;
 
-static OBJ_CLASS_INSTANCE(grequestx_class, opal_object_t, NULL, NULL);
+OBJ_CLASS_INSTANCE_STATIC(grequestx_class, opal_object_t, NULL, NULL);
 
 static opal_pointer_array_t classes;
 

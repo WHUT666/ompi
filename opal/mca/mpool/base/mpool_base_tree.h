@@ -92,7 +92,7 @@ void mca_mpool_base_tree_item_put(mca_mpool_base_tree_item_t *item);
  * left in the tree. The argument is the number of items to be printed
  * before becoming silent.
  */
-void mca_mpool_base_tree_print(int);
+OPAL_DECLSPEC void mca_mpool_base_tree_print(int);
 
 END_C_DECLS
 

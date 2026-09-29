@@ -41,11 +41,21 @@
  * into the array opal_datatype_predefined_type_desc, which is initialized at
  * runtime in opal_datatype_init(). Each basic type has two desc-elements....
  */
-#define OPAL_DATATYPE_INIT_DESC_PREDEFINED(NAME)                                \
-    {                                                                           \
-        .length = 1, .used = 1,                                                 \
-        .desc = &(opal_datatype_predefined_elem_desc[2 * OPAL_DATATYPE_##NAME]) \
-    }
+#if defined(_MSC_VER)
+/* &dllimport'd data is not constant-initializable; the desc.desc
+ * pointer is patched at runtime (opal_datatype_init /
+ * ompi_datatype_init fill it from the type id). */
+#    define OPAL_DATATYPE_INIT_DESC_PREDEFINED(NAME) \
+        {                                            \
+            .length = 1, .used = 1, .desc = NULL     \
+        }
+#else
+#    define OPAL_DATATYPE_INIT_DESC_PREDEFINED(NAME)                                \
+        {                                                                           \
+            .length = 1, .used = 1,                                                 \
+            .desc = &(opal_datatype_predefined_elem_desc[2 * OPAL_DATATYPE_##NAME]) \
+        }
+#endif
 #define OPAL_DATATYPE_INIT_DESC_NULL         \
     {                                        \
         .length = 0, .used = 0, .desc = NULL \
@@ -324,14 +334,29 @@
         NOTAV(SHORT_FLOAT_COMPLEX, FLAGS)
 #endif
 
+/* MSVC C has no _Complex keyword; <complex.h> provides the
+ * layout-identical _Fcomplex/_Dcomplex/_Lcomplex struct types, which
+ * suffice because these HANDLE sites only ever need sizeof()/alignment
+ * and opaque copy semantics. */
+#if defined(_MSC_VER)
+#    include <complex.h>
+#    define OPAL_COMPLEX_FLOAT_T       _Fcomplex
+#    define OPAL_COMPLEX_DOUBLE_T      _Dcomplex
+#    define OPAL_COMPLEX_LONG_DOUBLE_T _Lcomplex
+#else
+#    define OPAL_COMPLEX_FLOAT_T       float _Complex
+#    define OPAL_COMPLEX_DOUBLE_T      double _Complex
+#    define OPAL_COMPLEX_LONG_DOUBLE_T long double _Complex
+#endif
+
 #define OPAL_DATATYPE_HANDLE_FLOAT_COMPLEX(AV, NOTAV, FLAGS) \
-    AV(float _Complex, OPAL_ALIGNMENT_FLOAT_COMPLEX, FLOAT_COMPLEX, FLAGS)
+    AV(OPAL_COMPLEX_FLOAT_T, OPAL_ALIGNMENT_FLOAT_COMPLEX, FLOAT_COMPLEX, FLAGS)
 
 #define OPAL_DATATYPE_HANDLE_DOUBLE_COMPLEX(AV, NOTAV, FLAGS) \
-    AV(double _Complex, OPAL_ALIGNMENT_DOUBLE_COMPLEX, DOUBLE_COMPLEX, FLAGS)
+    AV(OPAL_COMPLEX_DOUBLE_T, OPAL_ALIGNMENT_DOUBLE_COMPLEX, DOUBLE_COMPLEX, FLAGS)
 
 #define OPAL_DATATYPE_HANDLE_LONG_DOUBLE_COMPLEX(AV, NOTAV, FLAGS) \
-    AV(long double _Complex, OPAL_ALIGNMENT_LONG_DOUBLE_COMPLEX, LONG_DOUBLE_COMPLEX, FLAGS)
+    AV(OPAL_COMPLEX_LONG_DOUBLE_T, OPAL_ALIGNMENT_LONG_DOUBLE_COMPLEX, LONG_DOUBLE_COMPLEX, FLAGS)
 
 #if defined(HAVE__FLOAT128) && defined(HAVE__FLOAT128__COMPLEX)
 #    define OPAL_DATATYPE_HANDLE_FLOAT128_COMPLEX(AV, NOTAV, FLAGS) \

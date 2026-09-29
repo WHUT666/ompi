@@ -344,6 +344,15 @@ int opal_init_gethostname(void)
         return OPAL_ERR_OUT_OF_RESOURCE;
     }
 
+#ifdef _WIN32
+    /* the compat macro is undef'd above, so gethostname() is the raw
+       Winsock call here; Winsock requires WSAStartup before use */
+    {
+        WSADATA wsa;
+        WSAStartup(MAKEWORD(2, 2), &wsa);
+    }
+#endif
+
     while (num_tries < NUM_TRIES_FOR_NULL_HOSTNAME) {
         ++num_tries;
 

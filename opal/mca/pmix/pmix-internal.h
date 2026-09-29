@@ -84,14 +84,14 @@ typedef struct {
     opal_list_item_t super;
     pmix_info_t info;
 } opal_info_item_t;
-OBJ_CLASS_DECLARATION(opal_info_item_t);
+OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_info_item_t);
 
 /* define the equivalent to opal_namelist_t for pmix_proc_t */
 typedef struct {
     opal_list_item_t super;
     pmix_proc_t procid;
 } opal_proclist_t;
-OBJ_CLASS_DECLARATION(opal_proclist_t);
+OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_proclist_t);
 
 typedef opal_cond_t opal_pmix_condition_t;
 

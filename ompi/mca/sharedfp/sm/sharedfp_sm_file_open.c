@@ -52,6 +52,8 @@
 #include <libgen.h>
 #include <unistd.h>
 
+
+
 int mca_sharedfp_sm_file_open (struct ompi_communicator_t *comm,
                                const char* filename,
                                int amode,

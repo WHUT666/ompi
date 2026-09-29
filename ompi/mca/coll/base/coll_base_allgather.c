@@ -582,9 +582,6 @@ int ompi_coll_base_allgather_intra_two_procs(const void *sbuf, size_t scount,
 
     rank = ompi_comm_rank(comm);
 
-    OPAL_OUTPUT((ompi_coll_base_framework.framework_output,
-                 "ompi_coll_base_allgather_intra_two_procs rank %d", rank));
-
     if (2 != ompi_comm_size(comm)) {
         return MPI_ERR_UNSUPPORTED_OPERATION;
     }

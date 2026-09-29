@@ -162,6 +162,7 @@ int32_t opal_datatype_copy_content_same_ddt(const opal_datatype_t *datatype, int
      * (true_extent + ((count - 1) * extent))
      */
     extent = (datatype->true_ub - datatype->true_lb) + (count - 1) * (datatype->ub - datatype->lb);
+    fflush(stderr);
 
     fct = non_overlap_accelerator_copy_content_same_ddt;
     if (destination_base < source_base) {

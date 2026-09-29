@@ -213,13 +213,13 @@ static int ompi_comm_fill_rest (ompi_communicator_t *comm,
 ** for Comm_split for inter-coms, we do not have this
 ** functions, so we need to emulate it.
 */
-typedef int ompi_comm_allgatherfct (void* inbuf, int incount, MPI_Datatype intype,
-                                    void* outbuf, int outcount, MPI_Datatype outtype,
+typedef int ompi_comm_allgatherfct (void* inbuf, size_t incount, MPI_Datatype intype,
+                                    void* outbuf, size_t outcount, MPI_Datatype outtype,
                                     ompi_communicator_t *comm,
                                     mca_coll_base_module_t *data);
 
-static int ompi_comm_allgather_emulate_intra (void* inbuf, int incount, MPI_Datatype intype,
-                                              void* outbuf, int outcount,
+static int ompi_comm_allgather_emulate_intra (void* inbuf, size_t incount, MPI_Datatype intype,
+                                              void* outbuf, size_t outcount,
                                               MPI_Datatype outtype,
                                               ompi_communicator_t *comm,
                                               mca_coll_base_module_t *data);
@@ -2565,9 +2565,9 @@ int ompi_comm_set_name (ompi_communicator_t *comm, const char *name )
  * 2. an inter-bcast from rank 0 in remote_group.
  */
 
-static int ompi_comm_allgather_emulate_intra( void *inbuf, int incount,
+static int ompi_comm_allgather_emulate_intra( void *inbuf, size_t incount,
                                               MPI_Datatype intype, void* outbuf,
-                                              int outcount, MPI_Datatype outtype,
+                                              size_t outcount, MPI_Datatype outtype,
                                               ompi_communicator_t *comm,
                                               mca_coll_base_module_t *data)
 {
@@ -2587,11 +2587,11 @@ static int ompi_comm_allgather_emulate_intra( void *inbuf, int incount,
 
     /* Step 1: the gather-step */
     if ( 0 == rank ) {
-        tmpbuf = (int *) malloc ((size_t)rsize*outcount*sizeof(int));
+        tmpbuf = (int *) malloc ((size_t)rsize*(size_t)outcount*sizeof(int));
         if ( NULL == tmpbuf ) {
             return (OMPI_ERR_OUT_OF_RESOURCE);
         }
-        req = (MPI_Request *)malloc ((size_t)rsize*outcount*sizeof(MPI_Request));
+        req = (MPI_Request *)malloc ((size_t)rsize*(size_t)outcount*sizeof(MPI_Request));
         if ( NULL == req ) {
             free ( tmpbuf );
             return (OMPI_ERR_OUT_OF_RESOURCE);

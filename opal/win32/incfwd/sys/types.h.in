@@ -1,5 +1,14 @@
 #ifndef OPAL_WIN32_FWD_SYS_TYPES_H
 #define OPAL_WIN32_FWD_SYS_TYPES_H
+/* The UCRT defines off_t as 32-bit long, which truncates the 64-bit
+ * offsets MPI-IO (MPI_Offset) and pread/pwrite need.  Claiming
+ * _OFF_T_DEFINED first lets us supply a 64-bit type; the CRT header
+ * then skips its own typedef. */
+#ifndef _OFF_T_DEFINED
+#    define _OFF_T_DEFINED
+typedef __int64 _off_t;
+typedef _off_t off_t;
+#endif
 #include "@OPAL_CRT_UCRT@/sys/types.h"
 #include <stdint.h>
 #include <BaseTsd.h>

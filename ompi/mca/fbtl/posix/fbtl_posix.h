@@ -75,7 +75,12 @@ int mca_fbtl_posix_lock ( struct flock *lock, ompio_file_t *fh, int op,
 void  mca_fbtl_posix_unlock ( struct flock *lock, ompio_file_t *fh, int *lock_counter );
 
 /* Right now statically defined, will become a configure check */
+#if !defined(_WIN32)
+/* POSIX AIO does not exist on Windows; without it fbtl_ipreadv and
+ * fbtl_ipwritev are registered as NULL and ompio falls back to
+ * synchronous I/O with immediately-complete nonblocking requests. */
 #define FBTL_POSIX_HAVE_AIO 1
+#endif
 
 struct mca_fbtl_posix_request_data_t {
     int            prd_req_count;        /* total number of sub reqs */
@@ -88,14 +93,17 @@ struct mca_fbtl_posix_request_data_t {
     struct flock   prd_lock;             /* lock used for certain file systems */
     int            prd_lock_counter;     /* to keep track of no. of lock calls */
     ompio_file_t  *prd_fh;               /* pointer to the ompio_fh structure */
-    union {
 #if defined (FBTL_POSIX_HAVE_AIO)
+    union {
         struct {
           struct aiocb  *aio_reqs;            /* pointer array of req structures */
           int           *aio_req_status;      /* array of statuses */
       } prd_aio;
-#endif
     };
+#else
+    /* no AIO on Windows: keep a member so the struct stays nonempty */
+    void          *prd_unused;
+#endif
 
 };
 typedef struct mca_fbtl_posix_request_data_t mca_fbtl_posix_request_data_t;

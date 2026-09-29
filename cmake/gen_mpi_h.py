@@ -173,6 +173,25 @@ typedef struct { int64_t _v[2]; } ompi_fortran_i128_t;
 #define ompi_fortran_complex_t float
 #define ompi_fortran_double_complex_t double
 #define ompi_fortran_common_t char
+
+/* MPI-IO / ompio feature answers for the Windows port.  The shim
+ * provides POSIX semaphores (semaphore.h over CreateSemaphoreA) and
+ * sys/param.h+sys/stat.h, but no POSIX AIO (aio.h) and no
+ * preadv/pwritev -- fbtl/posix takes its lseek+readv fallback.
+ * The "absent" macros must stay UNDEFINED, not 0: several call sites
+ * test them with '#if defined(...)'. */
+#define HAVE_SEM_OPEN 1
+#define HAVE_SEM_INIT 1
+#define HAVE_LIBGEN_H 1
+#define HAVE_SYS_PARAM_H 1
+#define HAVE_SYS_STAT_H 1
+#define HAVE_ALLOCA_H 1
+/* #undef HAVE_AIO */
+/* #undef HAVE_AIO_H */
+/* #undef HAVE_PREADV */
+/* #undef HAVE_PWRITEV */
+/* #undef HAVE_SYSLIMITS_H */
+/* #undef HAVE_SYS_SYSCTL_H */
 """
 
 

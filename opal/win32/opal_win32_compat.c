@@ -720,10 +720,14 @@ OPAL_WIN32_DECLSPEC int opal_win32_fd_is_nonblocking(int fd)
 OPAL_WIN32_DECLSPEC int opal_win32_fcntl(int fd, int cmd, ...)
 {
     va_list ap;
-    int arg;
+    intptr_t arg;
     int rc = 0;
     va_start(ap, cmd);
-    arg = va_arg(ap, int);
+    /* Win64 varargs occupy 8-byte slots: reading intptr_t is safe for
+     * int args and does not truncate pointer args (F_SETLK takes a
+     * struct flock *).  Reading int here would lose the high 32 bits
+     * of a pointer. */
+    arg = va_arg(ap, intptr_t);
     va_end(ap);
 
     switch (cmd) {
@@ -772,9 +776,88 @@ OPAL_WIN32_DECLSPEC int opal_win32_fcntl(int fd, int cmd, ...)
         return _dup(fd);
     case F_GETLK:
     case F_SETLK:
-    case F_SETLKW:
-        errno = ENOSYS;
-        return -1;
+    case F_SETLKW: {
+        /* POSIX byte-range locking over LockFileEx.  LockFileEx takes
+         * the offset through an OVERLAPPED and the length separately;
+         * l_len == 0 means "to EOF" in POSIX, which maps to the
+         * largest possible extent so that a later F_UNLCK computed the
+         * same way still matches the locked range. */
+        struct flock *lk = (struct flock *) arg;
+        HANDLE h;
+        __int64 base = 0, start;
+        DWORD nlo, nhi, flags;
+        OVERLAPPED ov;
+
+        if (NULL == lk) {
+            errno = EFAULT;
+            return -1;
+        }
+        h = (HANDLE) _get_osfhandle(fd);
+        if (INVALID_HANDLE_VALUE == h || NULL == h) {
+            errno = EBADF;
+            return -1;
+        }
+        switch (lk->l_whence) {
+        case SEEK_SET:
+            base = 0;
+            break;
+        case SEEK_CUR:
+            base = _lseeki64(fd, 0, SEEK_CUR);
+            break;
+        case SEEK_END:
+            base = _filelengthi64(fd);
+            break;
+        default:
+            errno = EINVAL;
+            return -1;
+        }
+        if (base < 0) {
+            return -1;
+        }
+        start = base + lk->l_start;
+        if (0 == lk->l_len) {
+            nlo = 0xFFFFFFFF;
+            nhi = 0xFFFFFFFF;
+        } else {
+            nlo = (DWORD) (lk->l_len & 0xFFFFFFFF);
+            nhi = (DWORD) (((unsigned __int64) lk->l_len) >> 32);
+        }
+        memset(&ov, 0, sizeof(ov));
+        ov.Offset = (DWORD) (start & 0xFFFFFFFF);
+        ov.OffsetHigh = (DWORD) (((unsigned __int64) start) >> 32);
+
+        if (F_UNLCK == lk->l_type) {
+            if (!UnlockFileEx(h, 0, nlo, nhi, &ov)) {
+                errno = EIO;
+                return -1;
+            }
+            return 0;
+        }
+        flags = (F_WRLCK == lk->l_type) ? LOCKFILE_EXCLUSIVE_LOCK : 0;
+        if (F_GETLK == cmd) {
+            /* Probe: if a conflicting lock were held the immediate lock
+             * would fail.  There is no l_pid to report on Windows;
+             * leaving l_type set signals "would block". */
+            if (LockFileEx(h, flags | LOCKFILE_FAIL_IMMEDIATELY, 0, nlo, nhi, &ov)) {
+                UnlockFileEx(h, 0, nlo, nhi, &ov);
+                lk->l_type = F_UNLCK;
+            }
+            return 0;
+        }
+        if (F_SETLK == cmd) {
+            flags |= LOCKFILE_FAIL_IMMEDIATELY;
+        }
+        /* F_SETLKW (no FAIL_IMMEDIATELY) blocks in LockFileEx until the
+         * range becomes available, which is the POSIX semantics. */
+        if (!LockFileEx(h, flags, 0, nlo, nhi, &ov)) {
+            DWORD gle = GetLastError();
+            errno = (ERROR_LOCK_VIOLATION == gle || ERROR_IO_PENDING == gle)
+                        ? EACCES
+                        : EIO;
+            return -1;
+        }
+        return 0;
+    }
     default:
         errno = EINVAL;
         return -1;

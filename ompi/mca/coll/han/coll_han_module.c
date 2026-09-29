@@ -19,6 +19,15 @@
 
 #include "ompi_config.h"
 
+#ifdef _WIN32
+/* posix_memalign() in the Windows compatibility layer is built on
+ * _aligned_malloc(), whose blocks must be released with _aligned_free(). */
+#    include <malloc.h>
+#    define ompi_han_buffer_free(p) _aligned_free(p)
+#else
+#    define ompi_han_buffer_free(p) free(p)
+#endif
+
 #include "mpi.h"
 #include "coll_han.h"
 #include "coll_han_dynamic.h"
@@ -39,7 +48,7 @@ static void fragment_item_constructor(fragment_item_t *item)
 static void fragment_item_destructor(fragment_item_t *item)
 {
     if (item->buffer) {
-        free(item->buffer);
+        ompi_han_buffer_free(item->buffer);
         item->buffer = NULL;
     }
 }
@@ -65,7 +74,7 @@ static void large_fragment_item_constructor(large_fragment_item_t *item)
 static void large_fragment_item_destructor(large_fragment_item_t *item)
 {
     if (item->buffer) {
-        free(item->buffer);
+        ompi_han_buffer_free(item->buffer);
         item->buffer = NULL;
     }
 }

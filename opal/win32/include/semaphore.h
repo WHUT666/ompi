@@ -34,7 +34,7 @@ OPAL_WIN32_DECLSPEC int sem_trywait(sem_t *sem);
 OPAL_WIN32_DECLSPEC int sem_timedwait(sem_t *sem, const struct timespec *abs_timeout);
 OPAL_WIN32_DECLSPEC int sem_post(sem_t *sem);
 OPAL_WIN32_DECLSPEC int sem_getvalue(sem_t *sem, int *sval);
-sem_t *sem_open(const char *name, int oflag, ...);
+OPAL_WIN32_DECLSPEC sem_t *sem_open(const char *name, int oflag, ...);
 OPAL_WIN32_DECLSPEC int sem_close(sem_t *sem);
 OPAL_WIN32_DECLSPEC int sem_unlink(const char *name);
 

@@ -74,31 +74,39 @@ endfunction()
 # ------------------------------------------------------------------
 # Windows component selection (curated)
 #
-# Goal for v1: MPI_Init + MPI_Send/Recv over TCP (pml/ob1 + btl tcp/self)
-# plus enough collectives/IO to run the examples.  RDMA/UCX/OFI/Portals4
-# components are all Unix-only; osc/rdma and osc/sm need btl rdma or smsc
-# support and are deferred.
+# pml/ob1 + btl tcp/self covers point-to-point and collectives.  osc/rdma
+# works over btl/tcp (which emulates put/get via active messages);
+# osc/sm needs an smsc component and is deferred.  RDMA/UCX/OFI/Portals4
+# components are all Unix-only.
 # ------------------------------------------------------------------
 ompi_add_mca_framework(bml      COMPONENTS r2)
 ompi_add_mca_framework(coll     COMPONENTS basic self tuned inter libnbc)
 ompi_add_mca_framework(hook     COMPONENTS comm_method)
 ompi_add_mca_framework(mtl)          # base only: no libfabric/psm on Windows
 ompi_add_mca_framework(op)           # base only: generic C op implementations
-ompi_add_mca_framework(osc)          # base only: rdma/sm deferred (need smsc/rdma btl)
+ompi_add_mca_framework(osc      COMPONENTS rdma)   # btl/tcp emulated RDMA
 ompi_add_mca_framework(part     COMPONENTS persist)
 ompi_add_mca_framework(pml      COMPONENTS ob1)
 ompi_add_mca_framework(topo     COMPONENTS basic)
 ompi_add_mca_framework(vprotocol)    # base only: no checksum layer yet
 
-# MPI-IO chain (io/ompio + fbtl/fcoll/fs/sharedfp) is deferred: the only
-# portable fbtl component is aio-based (no POSIX AIO on Windows) and the
-# others need it.  Frameworks stay compiled for structure; MPI_File_*
-# will fail component selection until a Windows fbtl lands.
-ompi_add_mca_framework(io)
-ompi_add_mca_framework(fbtl)
-ompi_add_mca_framework(fcoll)
-ompi_add_mca_framework(fs)
-ompi_add_mca_framework(sharedfp)
+# MPI-IO chain: io/ompio + fs/ufs + fbtl/posix + fcoll + sharedfp.
+# POSIX AIO is unavailable on Windows, so fbtl/posix builds without
+# FBTL_POSIX_HAVE_AIO -- MPI_File_i* falls back to synchronous I/O with
+# immediately-complete requests.  Byte-range locking goes through the
+# win32 fcntl() shim (LockFileEx).
+ompi_add_mca_framework(io        COMPONENTS ompio)
+ompi_add_mca_framework(fbtl      COMPONENTS posix)
+ompi_add_mca_framework(fcoll     COMPONENTS individual dynamic dynamic_gen2 vulcan)
+ompi_add_mca_framework(fs        COMPONENTS ufs)
+ompi_add_mca_framework(sharedfp  COMPONENTS individual lockedfile sm)
+
+# ompio engine helpers (ompi/mca/common/ompio) -- no MCA component of
+# their own, but io/ompio and the fbtl/fcoll/sharedfp components call
+# into them, so they are folded into open-mpi.dll here.
+file(GLOB _common_ompio_srcs CONFIGURE_DEPENDS
+     "${CMAKE_CURRENT_SOURCE_DIR}/common/ompio/*.c")
+list(APPEND OMPI_MCA_SOURCES ${_common_ompio_srcs})
 
 # propagate the accumulated source list up to ompi/CMakeLists.txt
 set(OMPI_MCA_SOURCES "${OMPI_MCA_SOURCES}" PARENT_SCOPE)

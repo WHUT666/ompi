@@ -61,7 +61,7 @@ OPAL_DECLSPEC mca_mpool_base_module_t *mca_mpool_basic_create(void *base, size_t
  * Globals
  */
 extern opal_list_t mca_mpool_base_modules;
-extern mca_mpool_base_module_t *mca_mpool_base_default_module;
+OPAL_DECLSPEC extern mca_mpool_base_module_t *mca_mpool_base_default_module;
 extern int mca_mpool_base_default_priority;
 
 OPAL_DECLSPEC extern mca_base_framework_t opal_mpool_base_framework;

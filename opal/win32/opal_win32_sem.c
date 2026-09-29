@@ -144,7 +144,7 @@ OPAL_WIN32_DECLSPEC int sem_getvalue(sem_t *sem, int *sval)
     return 0;
 }
 
-sem_t *sem_open(const char *name, int oflag, ...)
+OPAL_WIN32_DECLSPEC sem_t *sem_open(const char *name, int oflag, ...)
 {
     sem_t *sem;
     char wname[MAX_PATH + 16];

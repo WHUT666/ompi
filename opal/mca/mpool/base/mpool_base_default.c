@@ -19,6 +19,10 @@
 #ifdef HAVE_UNISTD_H
 #    include <unistd.h>
 #endif /* HAVE_UNISTD_H */
+#ifdef _WIN32
+/* aligned CRT allocation routines (_aligned_malloc/_aligned_free/...) */
+#    include <malloc.h>
+#endif
 
 #include "opal/constants.h"
 #include "opal/mca/base/base.h"
@@ -29,7 +33,16 @@
 static void *mca_mpool_default_alloc(mca_mpool_base_module_t *mpool, size_t size, size_t align,
                                      uint32_t flags)
 {
-#if HAVE_POSIX_MEMALIGN
+#ifdef _WIN32
+    /* _aligned_malloc blocks must be released with _aligned_free (and grown
+     * with _aligned_realloc) -- pairing them with plain free()/realloc()
+     * corrupts the CRT heap. Route every alignment through the _aligned_*
+     * family so alloc/realloc/free stay consistently paired. */
+    if (align < sizeof(void *)) {
+        align = sizeof(void *);
+    }
+    return _aligned_malloc(size, align);
+#elif HAVE_POSIX_MEMALIGN
     void *addr = NULL;
 
     if (align <= sizeof(void *)) {
@@ -55,7 +68,12 @@ static void *mca_mpool_default_alloc(mca_mpool_base_module_t *mpool, size_t size
 
 static void *mca_mpool_default_realloc(mca_mpool_base_module_t *mpool, void *addr, size_t size)
 {
-#if HAVE_POSIX_MEMALIGN
+#ifdef _WIN32
+    if (NULL != addr) {
+        return _aligned_realloc(addr, size, sizeof(void *));
+    }
+    return _aligned_malloc(size, sizeof(void *));
+#elif HAVE_POSIX_MEMALIGN
     return realloc(addr, size);
 #else
     if (NULL != addr) {
@@ -72,7 +90,9 @@ static void *mca_mpool_default_realloc(mca_mpool_base_module_t *mpool, void *add
 
 static void mca_mpool_default_free(mca_mpool_base_module_t *mpool, void *addr)
 {
-#if HAVE_POSIX_MEMALIGN
+#ifdef _WIN32
+    _aligned_free(addr);
+#elif HAVE_POSIX_MEMALIGN
     free(addr);
 #else
     if (NULL != addr) {

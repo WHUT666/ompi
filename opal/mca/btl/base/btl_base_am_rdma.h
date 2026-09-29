@@ -142,11 +142,11 @@ OPAL_DECLSPEC OBJ_CLASS_DECLARATION(mca_btl_base_am_rdma_module_t);
 /**
  * @brief create active-message RDMA/atomics functions
  */
-int opal_btl_base_am_rdma_create(mca_btl_base_module_t *btl,
+OPAL_DECLSPEC int opal_btl_base_am_rdma_create(mca_btl_base_module_t *btl,
                                  uint32_t flags_requested,
                                  bool no_memory_registration,
                                  mca_btl_base_am_rdma_module_t **am_module);
 
-int opal_btl_base_am_rdma_destroy(mca_btl_base_am_rdma_module_t *am_module);
+OPAL_DECLSPEC int opal_btl_base_am_rdma_destroy(mca_btl_base_am_rdma_module_t *am_module);
 
 #endif /* OPAL_MCA_BTL_BASE_AM_RDMA_H */

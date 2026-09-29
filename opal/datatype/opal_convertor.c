@@ -323,6 +323,7 @@ int32_t opal_convertor_unpack(opal_convertor_t *pConv, struct iovec *iov, uint32
 
         *max_data = pending_length;
         opal_convertor_get_current_pointer(pConv, (void **) &base_pointer);
+        fflush(stderr);
 
         for (i = 0; i < *out_size; i++) {
             if (iov[i].iov_len >= pending_length) {

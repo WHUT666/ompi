@@ -54,7 +54,6 @@ int ompi_osc_rdma_free(ompi_win_t *win)
     if (NULL == module) {
         return OMPI_SUCCESS;
     }
-
     while (module->pending_ops) {
         ompi_osc_rdma_progress (module);
     }
@@ -78,7 +77,6 @@ int ompi_osc_rdma_free(ompi_win_t *win)
     }
 
     win->w_osc_module = NULL;
-
     if (module->state) {
         int region_count = module->state->region_count & 0xffffffffL;
         if (NULL != module->dynamic_handles) {
@@ -140,7 +138,6 @@ int ompi_osc_rdma_free(ompi_win_t *win)
         opal_shmem_segment_detach (&module->seg_ds);
         module->segment_base = NULL;
     }
-
     free (module->peer_array);
     free (module->outstanding_lock_array);
     mca_mpool_base_default_module->mpool_free(mca_mpool_base_default_module,

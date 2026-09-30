@@ -520,6 +520,16 @@ OPAL_WIN32_DECLSPEC int pthread_setconcurrency(int level)
 OPAL_WIN32_DECLSPEC int pthread_mutex_init(pthread_mutex_t *m, const pthread_mutexattr_t *attr)
 {
     m->_kind = attr ? attr->type : PTHREAD_MUTEX_NORMAL;
+    if (attr && PTHREAD_PROCESS_SHARED == attr->pshared) {
+        /* Object will live in shared memory: a CRITICAL_SECTION is
+         * process-private, so mark the mutex and use the interlocked
+         * spin on _sh_lock instead. */
+        m->_kind |= _MUTEX_PSHARED;
+        m->_sh_lock = 0;
+        m->_sh_pad = 0;
+        InterlockedExchange(&m->_state, 2);
+        return 0;
+    }
     InitializeCriticalSection(&m->_cs);
     InterlockedExchange(&m->_state, 2);
     return 0;
@@ -528,7 +538,9 @@ OPAL_WIN32_DECLSPEC int pthread_mutex_init(pthread_mutex_t *m, const pthread_mut
 OPAL_WIN32_DECLSPEC int pthread_mutex_destroy(pthread_mutex_t *m)
 {
     if (2 == m->_state) {
-        DeleteCriticalSection(&m->_cs);
+        if (!(m->_kind & _MUTEX_PSHARED)) {
+            DeleteCriticalSection(&m->_cs);
+        }
         m->_state = 0;
     }
     return 0;
@@ -541,6 +553,25 @@ OPAL_WIN32_DECLSPEC int pthread_mutex_timedlock(pthread_mutex_t *m, const struct
     DWORD wait_ms;
     if (2 != m->_state) {
         opal_win32_mutex_lazy_init(m);
+    }
+    if (m->_kind & _MUTEX_PSHARED) {
+        unsigned spins = 0;
+        while (InterlockedCompareExchange(&m->_sh_lock, 1, 0)) {
+            clock_gettime(CLOCK_REALTIME, &now);
+            remaining_ns = ((LONGLONG) abstime->tv_sec - now.tv_sec) * 1000000000LL
+                           + (abstime->tv_nsec - now.tv_nsec);
+            if (remaining_ns <= 0) {
+                return ETIMEDOUT;
+            }
+            if (++spins < 64) {
+                YieldProcessor();
+            } else if (spins < 1024) {
+                SwitchToThread();
+            } else {
+                Sleep(1);
+            }
+        }
+        return 0;
     }
     for (;;) {
         if (TryEnterCriticalSection(&m->_cs)) {
@@ -665,8 +696,9 @@ OPAL_WIN32_DECLSPEC int pthread_mutexattr_getprioceiling(const pthread_mutexattr
 
 OPAL_WIN32_DECLSPEC int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr)
 {
-    (void) attr;
-    InitializeConditionVariable(cond);
+    InitializeConditionVariable(&cond->_cv);
+    cond->_sh_kind = (attr && PTHREAD_PROCESS_SHARED == attr->pshared) ? 1 : 0;
+    cond->_sh_gen = 0;
     return 0;
 }
 
@@ -693,11 +725,38 @@ OPAL_WIN32_DECLSPEC int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mut
     if (remaining_ns <= 0) {
         return ETIMEDOUT;
     }
+    if (cond->_sh_kind) {
+        /* process-shared: release the mutex, spin on the generation
+         * counter until it changes or the deadline passes. */
+        LONG gen = cond->_sh_gen;
+        unsigned spins = 0;
+        pthread_mutex_unlock(mutex);
+        for (;;) {
+            if (cond->_sh_gen != gen) {
+                break;
+            }
+            clock_gettime(CLOCK_REALTIME, &now);
+            remaining_ns = ((LONGLONG) abstime->tv_sec - now.tv_sec) * 1000000000LL
+                           + (abstime->tv_nsec - now.tv_nsec);
+            if (remaining_ns <= 0) {
+                pthread_mutex_lock(mutex);
+                return ETIMEDOUT;
+            }
+            if (++spins < 64) {
+                YieldProcessor();
+            } else if (spins < 1024) {
+                SwitchToThread();
+            } else {
+                Sleep(1);
+            }
+        }
+        return pthread_mutex_lock(mutex);
+    }
     wait_ms = (DWORD) (remaining_ns / 1000000LL);
     if ((remaining_ns % 1000000LL) != 0) {
         wait_ms += 1;
     }
-    rc = SleepConditionVariableCS(cond, &mutex->_cs, wait_ms);
+    rc = SleepConditionVariableCS(&cond->_cv, &mutex->_cs, wait_ms);
     if (rc) {
         return 0;
     }

@@ -1092,3 +1092,4 @@ foreach(_hf IN LISTS _help_files)
 endforeach()
 
 enable_testing()
+add_subdirectory(test)

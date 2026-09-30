@@ -175,8 +175,9 @@ typedef struct { int64_t _v[2]; } ompi_fortran_i128_t;
 #define ompi_fortran_common_t char
 
 /* MPI-IO / ompio feature answers for the Windows port.  The shim
- * provides POSIX semaphores (semaphore.h over CreateSemaphoreA) and
- * sys/param.h+sys/stat.h, but no POSIX AIO (aio.h) and no
+ * provides POSIX semaphores (semaphore.h over CreateSemaphoreA),
+ * POSIX AIO (aio.h via worker threads doing positioned I/O, see
+ * opal/win32/opal_win32_aio.c) and sys/param.h+sys/stat.h, but no
  * preadv/pwritev -- fbtl/posix takes its lseek+readv fallback.
  * The "absent" macros must stay UNDEFINED, not 0: several call sites
  * test them with '#if defined(...)'. */
@@ -186,8 +187,12 @@ typedef struct { int64_t _v[2]; } ompi_fortran_i128_t;
 #define HAVE_SYS_PARAM_H 1
 #define HAVE_SYS_STAT_H 1
 #define HAVE_ALLOCA_H 1
+#define HAVE_AIO_H 1
+/* the win32 pthread shim implements process-shared mutexes/conds as
+ * interlocked spin + generation counter valid across mapped segments */
+#define HAVE_PTHREAD_MUTEXATTR_SETPSHARED 1
+#define HAVE_PTHREAD_CONDATTR_SETPSHARED 1
 /* #undef HAVE_AIO */
-/* #undef HAVE_AIO_H */
 /* #undef HAVE_PREADV */
 /* #undef HAVE_PWRITEV */
 /* #undef HAVE_SYSLIMITS_H */

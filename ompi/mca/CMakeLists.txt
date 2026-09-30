@@ -76,15 +76,16 @@ endfunction()
 #
 # pml/ob1 + btl tcp/self covers point-to-point and collectives.  osc/rdma
 # works over btl/tcp (which emulates put/get via active messages);
-# osc/sm needs an smsc component and is deferred.  RDMA/UCX/OFI/Portals4
-# components are all Unix-only.
+# osc/sm provides direct shared-memory RMA for Win_allocate(_shared) on
+# the local node via opal/shmem (CreateFileMapping-backed).  RDMA/UCX/
+# OFI/Portals4 components are all Unix-only.
 # ------------------------------------------------------------------
 ompi_add_mca_framework(bml      COMPONENTS r2)
 ompi_add_mca_framework(coll     COMPONENTS basic self tuned inter libnbc)
 ompi_add_mca_framework(hook     COMPONENTS comm_method)
 ompi_add_mca_framework(mtl)          # base only: no libfabric/psm on Windows
 ompi_add_mca_framework(op)           # base only: generic C op implementations
-ompi_add_mca_framework(osc      COMPONENTS rdma)   # btl/tcp emulated RDMA
+ompi_add_mca_framework(osc      COMPONENTS rdma sm)  # rdma: btl/tcp AM; sm: shared-segment RMA
 ompi_add_mca_framework(part     COMPONENTS persist)
 ompi_add_mca_framework(pml      COMPONENTS ob1)
 ompi_add_mca_framework(topo     COMPONENTS basic)

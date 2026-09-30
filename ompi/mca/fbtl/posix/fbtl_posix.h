@@ -75,12 +75,10 @@ int mca_fbtl_posix_lock ( struct flock *lock, ompio_file_t *fh, int op,
 void  mca_fbtl_posix_unlock ( struct flock *lock, ompio_file_t *fh, int *lock_counter );
 
 /* Right now statically defined, will become a configure check */
-#if !defined(_WIN32)
-/* POSIX AIO does not exist on Windows; without it fbtl_ipreadv and
- * fbtl_ipwritev are registered as NULL and ompio falls back to
- * synchronous I/O with immediately-complete nonblocking requests. */
+/* On Windows the opal/win32 shim provides aio_* via worker threads
+ * performing positioned I/O on the fd's handle
+ * (opal/win32/opal_win32_aio.c), so the AIO path works there too. */
 #define FBTL_POSIX_HAVE_AIO 1
-#endif
 
 struct mca_fbtl_posix_request_data_t {
     int            prd_req_count;        /* total number of sub reqs */

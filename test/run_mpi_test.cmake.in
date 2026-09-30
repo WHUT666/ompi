@@ -1,0 +1,35 @@
+# CTest driver for MPI tests on Windows.
+#
+# Runs mpirun with stdout/stderr redirected to a real file -- mpirun
+# currently deadlocks when its own stdout is a pipe (pre-existing
+# launcher limitation in the Windows port) -- then prints the log and
+# propagates the exit code as a test pass/fail.
+
+set(ENV{PATH} "${BIN_DIR};${LIB_DIR};$ENV{PATH}")
+set(ENV{OPAL_PKGDATADIR} "@CMAKE_BINARY_DIR@/share/openmpi")
+set(ENV{OMPI_PRTERUN} "${PRTERUN}")
+
+set(_log "@CMAKE_BINARY_DIR@/test/@TEST_NAME@.log")
+
+execute_process(
+    COMMAND "${MPIRUN}" -np @NP@ "${TEST_EXE}"
+    OUTPUT_FILE "${_log}"
+    ERROR_FILE "${_log}"
+    RESULT_VARIABLE _rc
+    TIMEOUT 300
+)
+
+if(EXISTS "${_log}")
+    file(READ "${_log}" _out)
+    message(STATUS "---- @TEST_NAME@ output ----")
+    message(STATUS "${_out}")
+endif()
+
+if(NOT _rc EQUAL 0)
+    message(FATAL_ERROR "@TEST_NAME@ failed: mpirun rc=${_rc}")
+endif()
+
+file(STRINGS "${_log}" _fails REGEX "FAIL|RESULT FAIL")
+if(_fails)
+    message(FATAL_ERROR "@TEST_NAME@ reported FAIL lines: ${_fails}")
+endif()

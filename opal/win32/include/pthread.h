@@ -127,9 +127,19 @@ OPAL_WIN32_DECLSPEC int pthread_setconcurrency(int level);
 
 typedef struct pthread_mutex_t {
     volatile LONG      _state;
-    int                _kind;   /* PTHREAD_MUTEX_* */
+    int                _kind;   /* PTHREAD_MUTEX_* | _MUTEX_PSHARED */
     CRITICAL_SECTION   _cs;
+    /* Process-shared fast path, valid when _kind has _MUTEX_PSHARED set.
+     * The object then lives in shared memory (e.g. an mmap'd segment);
+     * a CRITICAL_SECTION is process-private and cannot be used there,
+     * so locking is an interlocked spin on _sh_lock instead.  The two
+     * extra words also sit in the shared segment. */
+    volatile LONG      _sh_lock;
+    volatile LONG      _sh_pad;
 } pthread_mutex_t;
+
+/* internal flag OR'd into _kind for PTHREAD_PROCESS_SHARED mutexes */
+#define _MUTEX_PSHARED 0x10000
 
 typedef struct pthread_mutexattr_t {
     int type;
@@ -150,10 +160,10 @@ typedef struct pthread_mutexattr_t {
 #define PTHREAD_MUTEX_STALLED          0
 #define PTHREAD_MUTEX_ROBUST           1
 
-#define PTHREAD_MUTEX_INITIALIZER {0, PTHREAD_MUTEX_NORMAL, {0}}
-#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER {0, PTHREAD_MUTEX_RECURSIVE, {0}}
+#define PTHREAD_MUTEX_INITIALIZER {0, PTHREAD_MUTEX_NORMAL, {0}, 0, 0}
+#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER {0, PTHREAD_MUTEX_RECURSIVE, {0}, 0, 0}
 #define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP PTHREAD_RECURSIVE_MUTEX_INITIALIZER
-#define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP {0, PTHREAD_MUTEX_ERRORCHECK, {0}}
+#define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP {0, PTHREAD_MUTEX_ERRORCHECK, {0}, 0, 0}
 
 static inline int opal_win32_mutex_lazy_init(pthread_mutex_t *m)
 {
@@ -170,10 +180,28 @@ static inline int opal_win32_mutex_lazy_init(pthread_mutex_t *m)
     return 0;
 }
 
+static inline int opal_win32_mutex_pshared_lock(pthread_mutex_t *m)
+{
+    unsigned spins = 0;
+    while (InterlockedCompareExchange(&m->_sh_lock, 1, 0)) {
+        if (++spins < 64) {
+            YieldProcessor();
+        } else if (spins < 1024) {
+            SwitchToThread();
+        } else {
+            Sleep(1);
+        }
+    }
+    return 0;
+}
+
 static inline int pthread_mutex_lock(pthread_mutex_t *m)
 {
     if (2 != m->_state) {
         opal_win32_mutex_lazy_init(m);
+    }
+    if (m->_kind & _MUTEX_PSHARED) {
+        return opal_win32_mutex_pshared_lock(m);
     }
     EnterCriticalSection(&m->_cs);
     return 0;
@@ -184,11 +212,18 @@ static inline int pthread_mutex_trylock(pthread_mutex_t *m)
     if (2 != m->_state) {
         opal_win32_mutex_lazy_init(m);
     }
+    if (m->_kind & _MUTEX_PSHARED) {
+        return InterlockedCompareExchange(&m->_sh_lock, 1, 0) ? EBUSY : 0;
+    }
     return TryEnterCriticalSection(&m->_cs) ? 0 : EBUSY;
 }
 
 static inline int pthread_mutex_unlock(pthread_mutex_t *m)
 {
+    if (m->_kind & _MUTEX_PSHARED) {
+        InterlockedExchange(&m->_sh_lock, 0);
+        return 0;
+    }
     LeaveCriticalSection(&m->_cs);
     return 0;
 }
@@ -217,14 +252,23 @@ OPAL_WIN32_DECLSPEC int pthread_mutexattr_getprioceiling(const pthread_mutexattr
 /* Condition variables                                                 */
 /* ------------------------------------------------------------------ */
 
-typedef CONDITION_VARIABLE pthread_cond_t;
+/* CONDITION_VARIABLE is process-private, so a process-shared condvar is
+ * emulated with a generation counter living in shared memory: a waiter
+ * samples _sh_gen under the mutex, releases it, then yields until the
+ * generation changes; signal/broadcast bump the generation (waking all
+ * waiters, which re-check their predicate -- legal POSIX behaviour). */
+typedef struct pthread_cond_t {
+    CONDITION_VARIABLE _cv;
+    volatile LONG      _sh_kind;   /* nonzero => process-shared */
+    volatile LONG      _sh_gen;
+} pthread_cond_t;
 
 typedef struct pthread_condattr_t {
     int pshared;
     int clock_id;
 } pthread_condattr_t;
 
-#define PTHREAD_COND_INITIALIZER CONDITION_VARIABLE_INIT
+#define PTHREAD_COND_INITIALIZER {CONDITION_VARIABLE_INIT, 0, 0}
 
 OPAL_WIN32_DECLSPEC int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr);
 OPAL_WIN32_DECLSPEC int pthread_cond_destroy(pthread_cond_t *cond);
@@ -234,18 +278,41 @@ static inline int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex
     if (2 != mutex->_state) {
         opal_win32_mutex_lazy_init(mutex);
     }
-    return SleepConditionVariableCS(cond, &mutex->_cs, INFINITE) ? 0 : EINVAL;
+    if (cond->_sh_kind) {
+        LONG gen = cond->_sh_gen;
+        unsigned spins = 0;
+        pthread_mutex_unlock(mutex);
+        while (cond->_sh_gen == gen) {
+            if (++spins < 64) {
+                YieldProcessor();
+            } else if (spins < 1024) {
+                SwitchToThread();
+            } else {
+                Sleep(1);
+            }
+        }
+        return pthread_mutex_lock(mutex);
+    }
+    return SleepConditionVariableCS(&cond->_cv, &mutex->_cs, INFINITE) ? 0 : EINVAL;
 }
 
 static inline int pthread_cond_signal(pthread_cond_t *cond)
 {
-    WakeConditionVariable(cond);
+    if (cond->_sh_kind) {
+        InterlockedIncrement(&cond->_sh_gen);
+        return 0;
+    }
+    WakeConditionVariable(&cond->_cv);
     return 0;
 }
 
 static inline int pthread_cond_broadcast(pthread_cond_t *cond)
 {
-    WakeAllConditionVariable(cond);
+    if (cond->_sh_kind) {
+        InterlockedIncrement(&cond->_sh_gen);
+        return 0;
+    }
+    WakeAllConditionVariable(&cond->_cv);
     return 0;
 }
 

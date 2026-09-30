@@ -102,7 +102,7 @@ opal_add_mca_framework(pmix)          # Phase 4: external pmix
 opal_add_mca_framework(rcache)
 opal_add_mca_framework(reachable  COMPONENTS weighted)
 opal_add_mca_framework(shmem      COMPONENTS mmap)    # mmap shim -> CreateFileMapping
-opal_add_mca_framework(smsc)          # TODO Phase 1c: windows component
+opal_add_mca_framework(smsc       COMPONENTS win)  # Read/WriteProcessMemory single-copy
 opal_add_mca_framework(threads    COMPONENTS pthreads)
 opal_add_mca_framework(timer)         # TODO Phase 1c: windows component
 

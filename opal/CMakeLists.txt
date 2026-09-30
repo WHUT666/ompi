@@ -161,6 +161,7 @@ set(OPAL_SOURCES
     mca/base/mca_base_var_group.c
 
     # Windows compatibility layer
+    win32/opal_win32_aio.c
     win32/opal_win32_compat.c
     win32/opal_win32_fs.c
     win32/opal_win32_misc.c
